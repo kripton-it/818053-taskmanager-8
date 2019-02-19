@@ -338,3 +338,14 @@ const fillBoard = () => {
 
 fillBoard();
 
+
+// пункт 7
+
+const mainFilterClickHandler = () => {
+  boardTasksElement.innerHTML = ``;
+  tasksNumber = getRandomInteger(1, 8);
+  fillBoard();
+};
+
+mainFilterElement.addEventListener(`click`, mainFilterClickHandler);
+
