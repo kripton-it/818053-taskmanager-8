@@ -2,16 +2,50 @@
 
 // пункты 3 и 5
 
-const mainFilterElement = document.querySelector(`.main__filter`);
-
 const getRandomInteger = (min, max) => Math.round(min - 0.5 + Math.random() * (max - min + 1));
 
-const renderFilterElement = (caption, amount, isDisabled = false, isChecked = false) => {
+const filters = [
+  {
+    caption: `All`,
+    amount: getRandomInteger(20, 40),
+    isChecked: true,
+  },
+  {
+    caption: `Overdue`,
+    amount: getRandomInteger(0, 5),
+    isDisabled: true,
+  },
+  {
+    caption: `Today`,
+    amount: getRandomInteger(0, 5),
+    isDisabled: true,
+  },
+  {
+    caption: `Favorites`,
+    amount: getRandomInteger(0, 10),
+  },
+  {
+    caption: `Repeating`,
+    amount: getRandomInteger(0, 5),
+  },
+  {
+    caption: `Tags`,
+    amount: getRandomInteger(5, 10),
+  },
+  {
+    caption: `Archive`,
+    amount: getRandomInteger(100, 200),
+  },
+];
+
+const mainFilterElement = document.querySelector(`.main__filter`);
+
+const getFilterElement = ({caption, amount, isDisabled = false, isChecked = false}) => {
   const checkedAttribute = isChecked ? ` checked` : ``;
   const disabledAttribute = isDisabled ? ` disabled` : ``;
   const idAttribute = `filter__${caption.toLowerCase()}`;
   const labelClassAttribute = `${idAttribute}-count`;
-  const filterElement = `
+  return `
   <input
     type="radio"
     id="${idAttribute}"
@@ -22,28 +56,19 @@ const renderFilterElement = (caption, amount, isDisabled = false, isChecked = fa
   />
   <label for="${idAttribute}" class="filter__label">
   ${caption.toUpperCase()} <span class="${labelClassAttribute}">${amount}</span></label>
-  <br />
 `;
-  mainFilterElement.insertAdjacentHTML(`beforeend`, filterElement);
 };
 
-renderFilterElement(`All`, getRandomInteger(20, 40), false, true);
-renderFilterElement(`Overdue`, getRandomInteger(0, 5), true);
-renderFilterElement(`Today`, getRandomInteger(0, 5), true);
-renderFilterElement(`Favorites`, getRandomInteger(0, 10));
-renderFilterElement(`Repeating`, getRandomInteger(0, 5));
-renderFilterElement(`Tags`, getRandomInteger(5, 10));
-renderFilterElement(`Archive`, getRandomInteger(100, 200));
-
+mainFilterElement.insertAdjacentHTML(`beforeend`, filters.map((filter) => getFilterElement(filter)).reduce((acc, item) => acc + item, ``));
 
 // пункты 4 и 6
 
-let tasksNumber = 7;
+const tasksNumber = 7;
 const boardTasksElement = document.querySelector(`.board__tasks`);
 
-const renderCardElement = (color, type = ``) => {
+const getCardElement = (color, type = ``) => {
   const typeClass = type ? ` card--${type}` : ``;
-  const cardElement = `<article class="card card--${color}${typeClass}">
+  return `<article class="card card--${color}${typeClass}">
   <form class="card__form" method="get">
     <div class="card__inner">
       <div class="card__control">
@@ -327,24 +352,20 @@ This is example of new task, you can add picture, set date and time, add tags.</
   </form>
 </article>
   `;
-  boardTasksElement.insertAdjacentHTML(`beforeend`, cardElement);
 };
 
-const fillBoard = () => {
-  for (let i = 1; i <= tasksNumber; i++) {
-    renderCardElement(`black`, `deadline`);
-  }
+const fillBoard = (number) => {
+  boardTasksElement.insertAdjacentHTML(`beforeend`, getCardElement(`pink`).repeat(number));
 };
 
-fillBoard();
+fillBoard(tasksNumber);
 
 
 // пункт 7
 
 const mainFilterClickHandler = () => {
   boardTasksElement.innerHTML = ``;
-  tasksNumber = getRandomInteger(1, 8);
-  fillBoard();
+  fillBoard(getRandomInteger(1, 8));
 };
 
 mainFilterElement.addEventListener(`click`, mainFilterClickHandler);
