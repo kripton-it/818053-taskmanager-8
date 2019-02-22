@@ -52,7 +52,8 @@ const fillBoard = (number) => {
 fillBoard(tasksNumber);
 
 // обработка кликов по фильтрам
-const mainFilterClickHandler = () => {
+const mainFilterClickHandler = (evt) => {
+  evt.preventDefault();
   boardTasksElement.innerHTML = ``;
   fillBoard(getRandomInteger(1, 8));
 };
