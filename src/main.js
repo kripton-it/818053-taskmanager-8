@@ -1,6 +1,7 @@
-import getRandomInteger from './utils.js';
+import {getRandomInteger} from './utils.js';
 import getFilter from './get-filter.js';
 import getTask from './get-task.js';
+import {generateTask} from './data.js';
 
 const filters = [
   {
@@ -58,4 +59,7 @@ const mainFilterClickHandler = (evt) => {
   fillBoard(getRandomInteger(1, 8));
 };
 mainFilterElement.addEventListener(`click`, mainFilterClickHandler);
+
+const task = generateTask();
+console.dir(task);
 
