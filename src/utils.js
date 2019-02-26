@@ -6,8 +6,9 @@ const Unit = {
   second: 1000
 };
 
-// перевод числа недель в число часов
-const getHourFromWeek = (week) => week * Unit.week * Unit.day * Unit.hour;
+const Months = [`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`, `October`, `November`, `December`];
+
+export const Colors = [`black`, `yellow`, `blue`, `green`, `pink`];
 
 // случайное целое число [min; max]
 export const getRandomInteger = (max, min = 0) => Math.floor(min + Math.random() * (max - min + 1));
@@ -30,10 +31,8 @@ export const getMixedArray = (array) => {
   return mixedArray;
 };
 
-// рандомная дата в диапазоне [текущая дата + weekFrom недель; текущая дата + weekTo недель] с точностью до часа
-export const getRandomDate = (weekTo, weekFrom = 0) => {
-  const hourFrom = getHourFromWeek(weekFrom);
-  const hourTo = getHourFromWeek(weekTo);
-  return Date.now() + getRandomInteger(hourTo, hourFrom) * Unit.minute * Unit.second;
-};
+// рандомная дата в диапазоне [текущая дата + weekFrom недель; текущая дата + weekTo недель] с точностью до дня
+export const getRandomDate = (weekTo, weekFrom = 0) => Date.now() + getRandomInteger(weekTo * Unit.week, weekFrom * Unit.week) * Unit.day * Unit.hour * Unit.minute * Unit.second;
+
+export const getDate = (date) => `${date.getDate()} ${Months[date.getMonth()]}`;
 

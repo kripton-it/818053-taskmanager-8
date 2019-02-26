@@ -48,7 +48,7 @@ mainFilterElement.insertAdjacentHTML(
 
 // отрисовка карточек
 const fillBoard = (number) => {
-  boardTasksElement.insertAdjacentHTML(`beforeend`, getTask(`pink`).repeat(number));
+  boardTasksElement.insertAdjacentHTML(`beforeend`, (new Array(number)).fill(``).map(() => getTask(generateTask())).join(``));
 };
 fillBoard(tasksNumber);
 
@@ -59,7 +59,4 @@ const mainFilterClickHandler = (evt) => {
   fillBoard(getRandomInteger(1, 8));
 };
 mainFilterElement.addEventListener(`click`, mainFilterClickHandler);
-
-const task = generateTask();
-console.dir(task);
 

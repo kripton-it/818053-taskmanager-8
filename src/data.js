@@ -1,9 +1,8 @@
-import {getRandomInteger, getRandomElement, getRandomDate, getMixedArray} from './utils.js';
+import {Colors, getRandomInteger, getRandomElement, getRandomDate, getMixedArray} from './utils.js';
 
 const maxTagsNumber = 3;
 const Titles = [`Изучить теорию`, `Сделать домашку`, `Пройти интенсив на соточку`];
 const Tags = [`homework`, `theory`, `practice`, `intensive`, `keks`, `family`, `health`];
-const Colors = [`black`, `yellow`, `blue`, `green`, `pink`];
 
 const getTags = (array) => new Set(getMixedArray(array).slice(0, getRandomInteger(maxTagsNumber)));
 
