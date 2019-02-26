@@ -48,7 +48,7 @@ mainFilterElement.insertAdjacentHTML(
 
 // отрисовка карточек
 const fillBoard = (number) => {
-  boardTasksElement.insertAdjacentHTML(`beforeend`, (new Array(number)).fill(``).map(() => getTask(generateTask())).join(``));
+  boardTasksElement.insertAdjacentHTML(`beforeend`, (new Array(number)).fill(``).map((item, index) => getTask(generateTask(), index + 1)).join(``));
 };
 fillBoard(tasksNumber);
 
