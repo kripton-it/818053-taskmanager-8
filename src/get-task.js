@@ -1,6 +1,8 @@
-import {getDate, Colors} from './utils.js';
+import {getDate, getTime, Colors} from './utils.js';
+import {generateTask} from './data.js';
 
-export default (task, index) => {
+// создание одной карточки
+export const getTask = (task, index) => {
   const isRepeating = Object.values(task.repeatingDays).some((item) => item);
   const isOverdue = Date.now() > task.dueDate;
   const dueDate = new Date(task.dueDate);
@@ -46,7 +48,7 @@ export default (task, index) => {
     <input
       class="card__date"
       type="text"
-      placeholder="${getDate(dueDate)}"
+      value="${getDate(dueDate)}"
       name="date"
     />
   </label>
@@ -54,7 +56,7 @@ export default (task, index) => {
     <input
       class="card__time"
       type="text"
-      placeholder="11:15 PM"
+      value="${getTime(dueDate)}"
       name="time"
     />
   </label>
@@ -177,5 +179,8 @@ ${cardDates}
 </article>
   `;
 };
+
+// создание массива карточек
+export const getTasks = (number) => (new Array(number)).fill(``).map((item, index) => getTask(generateTask(), index + 1));
 
 

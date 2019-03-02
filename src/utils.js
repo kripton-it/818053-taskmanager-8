@@ -36,3 +36,11 @@ export const getRandomDate = (weekTo, weekFrom = 0) => Date.now() + getRandomInt
 
 export const getDate = (date) => `${date.getDate()} ${Months[date.getMonth()]}`;
 
+export const getTime = (date) => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const timeOfDay = hours < 12 ? `AM` : `PM`;
+  return `${hours % 12 < 10 ? `0${hours % 12}` : hours % 12}:${minutes < 10 ? `0${minutes}` : minutes} ${timeOfDay}`;
+};
+
+
