@@ -1,12 +1,13 @@
 import {Colors, getRandomInteger, getRandomElement, getRandomDate, getMixedArray} from './utils.js';
 
 const MAX_TAGS_NUMBER = 3;
+const Lots = [true, false, false, false, false];
 const Titles = [`Изучить теорию`, `Сделать домашку`, `Пройти интенсив на соточку`];
 const Tags = [`homework`, `theory`, `practice`, `intensive`, `keks`, `family`, `health`];
 
 const getTags = (array) => new Set(getMixedArray(array).slice(0, getRandomInteger(MAX_TAGS_NUMBER)));
 
-const castLots = () => getRandomInteger(1) === 1 ? true : false;
+const castLots = () => getRandomInteger(1) === 1;
 
 export const generateTask = () => ({
   title: getRandomElement(Titles),
@@ -15,13 +16,13 @@ export const generateTask = () => ({
   picture: `http://picsum.photos/100/100?r=${Math.random()}`,
   color: getRandomElement(Colors),
   repeatingDays: {
-    'Mo': castLots(),
-    'Tu': castLots(),
-    'We': castLots(),
-    'Th': castLots(),
-    'Fr': castLots(),
-    'Sa': castLots(),
-    'Su': castLots(),
+    'Mo': getRandomElement(Lots),
+    'Tu': getRandomElement(Lots),
+    'We': getRandomElement(Lots),
+    'Th': getRandomElement(Lots),
+    'Fr': getRandomElement(Lots),
+    'Sa': getRandomElement(Lots),
+    'Su': getRandomElement(Lots),
   },
   isFavorite: castLots(),
   isDone: castLots(),
