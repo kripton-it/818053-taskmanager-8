@@ -4,10 +4,11 @@ import {generateTask} from './data.js';
 // создание одной карточки
 export const getTask = (task, index) => {
   const isRepeating = Object.values(task.repeatingDays).some((item) => item);
-  const isOverdue = Date.now() > task.dueDate;
-  const dueDate = new Date(task.dueDate);
+  const hasDueDate = task.hasOwnProperty(`dueDate`);
+  const isOverdue = hasDueDate && Date.now() > task.dueDate;
+  const dueDate = hasDueDate ? new Date(task.dueDate) : null;
   const repeatingClass = isRepeating ? ` card--repeat` : ``;
-  const overdueClass = isOverdue ? ` card--deadline` : ``;
+  const overdueClass = (hasDueDate && isOverdue) ? ` card--deadline` : ``;
   const repeatingDays = Object.keys(task.repeatingDays);
 
   const cardControl = `<div class="card__control">
@@ -43,7 +44,7 @@ export const getTask = (task, index) => {
   </label>
 </div>`;
 
-  const cardDateDeadline = `<fieldset class="card__date-deadline" disabled>
+  const cardDateDeadline = hasDueDate ? `<fieldset class="card__date-deadline" disabled>
   <label class="card__input-deadline-wrap">
     <input
       class="card__date"
@@ -60,7 +61,7 @@ export const getTask = (task, index) => {
       name="time"
     />
   </label>
-</fieldset>`;
+</fieldset>` : ``;
 
   const cardRepeatInputs = repeatingDays.map((day) => `<input
   class="visually-hidden card__repeat-day-input"
@@ -113,7 +114,7 @@ export const getTask = (task, index) => {
 
   const cardDates = `<div class="card__dates">
   <button class="card__date-deadline-toggle" type="button">
-    date: <span class="card__date-status">${task.dueDate ? `yes` : `no`}</span>
+    date: <span class="card__date-status">${hasDueDate ? `yes` : `no`}</span>
   </button>
 
   ${cardDateDeadline}

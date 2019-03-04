@@ -9,22 +9,29 @@ const getTags = (array) => new Set(getMixedArray(array).slice(0, getRandomIntege
 
 const castLots = () => getRandomInteger(1) === 1;
 
-export const generateTask = () => ({
-  title: getRandomElement(Titles),
-  dueDate: getRandomDate(1, -1), // плюс-минус неделя от текущей даты
-  tags: getTags(Tags),
-  picture: `http://picsum.photos/100/100?r=${Math.random()}`,
-  color: getRandomElement(Colors),
-  repeatingDays: {
-    'Mo': getRandomElement(Lots),
-    'Tu': getRandomElement(Lots),
-    'We': getRandomElement(Lots),
-    'Th': getRandomElement(Lots),
-    'Fr': getRandomElement(Lots),
-    'Sa': getRandomElement(Lots),
-    'Su': getRandomElement(Lots),
-  },
-  isFavorite: castLots(),
-  isDone: castLots(),
-});
+export const generateTask = () => {
+  const task = {
+    title: getRandomElement(Titles),
+    tags: getTags(Tags),
+    picture: `http://picsum.photos/100/100?r=${Math.random()}`,
+    color: getRandomElement(Colors),
+    repeatingDays: {
+      'Mo': getRandomElement(Lots),
+      'Tu': getRandomElement(Lots),
+      'We': getRandomElement(Lots),
+      'Th': getRandomElement(Lots),
+      'Fr': getRandomElement(Lots),
+      'Sa': getRandomElement(Lots),
+      'Su': getRandomElement(Lots),
+    },
+    isFavorite: castLots(),
+    isDone: castLots(),
+  };
+
+  if (getRandomInteger(1) === 1) {
+    task.dueDate = getRandomDate(1, -1); // плюс-минус неделя от текущей даты
+  }
+
+  return task;
+};
 
