@@ -1,6 +1,6 @@
-import getRandomInteger from './utils.js';
+import {getRandomInteger} from './utils.js';
 import getFilter from './get-filter.js';
-import getTask from './get-task.js';
+import {getTasks} from './get-task.js';
 
 const filters = [
   {
@@ -45,17 +45,19 @@ mainFilterElement.insertAdjacentHTML(
     filters.map((filter) => getFilter(filter)).reduce((acc, item) => acc + item, ``)
 );
 
-// отрисовка карточек
-const fillBoard = (number) => {
-  boardTasksElement.insertAdjacentHTML(`beforeend`, getTask(`pink`).repeat(number));
+// отрисовка массива карточек
+const renderTasks = (target, number) => {
+  target.insertAdjacentHTML(`beforeend`, getTasks(number).join(``));
 };
-fillBoard(tasksNumber);
+
+renderTasks(boardTasksElement, tasksNumber);
 
 // обработка кликов по фильтрам
 const mainFilterClickHandler = (evt) => {
   evt.preventDefault();
   boardTasksElement.innerHTML = ``;
-  fillBoard(getRandomInteger(1, 8));
+  renderTasks(boardTasksElement, getRandomInteger(1, 8));
 };
+
 mainFilterElement.addEventListener(`click`, mainFilterClickHandler);
 
