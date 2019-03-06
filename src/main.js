@@ -50,10 +50,9 @@ mainFilterElement.insertAdjacentHTML(
 // отрисовка массива карточек
 const renderTasks = (tasks, container) => {
   const fragment = document.createDocumentFragment();
-  tasks.forEach((item) => {
-    const index = fragment.children.length + 1;
-    const task = new Task(item, index);
-    const editTask = new TaskEdit(item, index);
+  tasks.forEach((item, index) => {
+    const task = new Task(item, index + 1);
+    const editTask = new TaskEdit(item, index + 1);
     task.onEdit = () => {
       editTask.render();
       container.replaceChild(editTask.element, task.element);
