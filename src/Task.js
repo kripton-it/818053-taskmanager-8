@@ -65,9 +65,7 @@ export default class TaskEdit {
           class="card__text"
           placeholder="Start typing your text here..."
           name="text"
-        >
-          ${this._title}</textarea
-        >
+        >${this._title}</textarea>
       </label>
     </div>`;
 
