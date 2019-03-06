@@ -223,7 +223,8 @@ export default class TaskEdit {
   }
 
   unbind() {
-    // Удаление обработчиков
+    this._element.querySelector(`.card__btn--edit`)
+        .removeEventListener(`click`, this._onEditButtonClick.bind(this));
   }
 
   unrender() {

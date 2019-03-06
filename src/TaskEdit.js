@@ -228,6 +228,7 @@ export default class TaskEdit {
   }
 
   unbind() {
-    // Удаление обработчиков
+    this._element.querySelector(`.card__form`)
+        .removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
   }
 }
