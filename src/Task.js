@@ -1,6 +1,6 @@
 import {getDate, getTime, identity, Colors} from './utils.js';
 
-export default class TaskEdit {
+export default class Task {
   constructor(task, index) {
     this._title = task.title;
     this._dueDate = task.hasOwnProperty(`dueDate`) ? task.dueDate : null;
