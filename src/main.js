@@ -4,6 +4,7 @@ import generateTasks from './generate-tasks.js';
 import Task from './Task.js';
 import TaskEdit from './TaskEdit.js';
 
+const TASKS_NUMBER = 7;
 const filters = [
   {
     caption: `All`,
@@ -37,7 +38,6 @@ const filters = [
     amount: getRandomInteger(100, 200),
   },
 ];
-const TASKS_NUMBER = 7;
 const boardTasksElement = document.querySelector(`.board__tasks`);
 const mainFilterElement = document.querySelector(`.main__filter`);
 
