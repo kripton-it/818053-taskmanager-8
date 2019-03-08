@@ -13,6 +13,7 @@ export default class TaskEdit {
     this._element = null;
     this._onEdit = null;
     this._index = index;
+    this._onEditButtonClick = this._onEditButtonClick.bind(this);
   }
 
   _onEditButtonClick(evt) {
@@ -26,8 +27,8 @@ export default class TaskEdit {
     return this._element;
   }
 
-  set onEdit(func) {
-    this._onEdit = func;
+  set onEdit(fn) {
+    this._onEdit = fn;
   }
 
   get template() {
@@ -217,12 +218,12 @@ export default class TaskEdit {
 
   bind() {
     this._element.querySelector(`.card__btn--edit`)
-        .addEventListener(`click`, this._onEditButtonClick.bind(this));
+        .addEventListener(`click`, this._onEditButtonClick);
   }
 
   unbind() {
     this._element.querySelector(`.card__btn--edit`)
-        .removeEventListener(`click`, this._onEditButtonClick.bind(this));
+        .removeEventListener(`click`, this._onEditButtonClick);
   }
 
   unrender() {

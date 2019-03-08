@@ -13,6 +13,7 @@ export default class TaskEdit {
     this._element = null;
     this._onSubmit = null;
     this._index = index;
+    this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
   }
 
   _onSubmitButtonClick(evt) {
@@ -22,8 +23,8 @@ export default class TaskEdit {
     }
   }
 
-  set onSubmit(func) {
-    this._onSubmit = func;
+  set onSubmit(fn) {
+    this._onSubmit = fn;
   }
 
   get element() {
@@ -224,11 +225,11 @@ export default class TaskEdit {
 
   bind() {
     this._element.querySelector(`.card__form`)
-        .addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+        .addEventListener(`submit`, this._onSubmitButtonClick);
   }
 
   unbind() {
     this._element.querySelector(`.card__form`)
-        .removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+        .removeEventListener(`submit`, this._onSubmitButtonClick);
   }
 }
