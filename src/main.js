@@ -1,7 +1,10 @@
 import {getRandomInteger} from './utils.js';
 import getFilter from './get-filter.js';
-import {getTasks} from './get-task.js';
+import generateTasks from './generate-tasks.js';
+import Task from './Task.js';
+import TaskEdit from './TaskEdit.js';
 
+const TASKS_NUMBER = 7;
 const filters = [
   {
     caption: `All`,
@@ -35,7 +38,6 @@ const filters = [
     amount: getRandomInteger(100, 200),
   },
 ];
-const tasksNumber = 7;
 const boardTasksElement = document.querySelector(`.board__tasks`);
 const mainFilterElement = document.querySelector(`.main__filter`);
 
@@ -46,17 +48,34 @@ mainFilterElement.insertAdjacentHTML(
 );
 
 // отрисовка массива карточек
-const renderTasks = (target, number) => {
-  target.insertAdjacentHTML(`beforeend`, getTasks(number).join(``));
+const renderTasks = (tasks, container) => {
+  const fragment = document.createDocumentFragment();
+  tasks.forEach((item, index) => {
+    const task = new Task(item, index + 1);
+    const editTask = new TaskEdit(item, index + 1);
+    task.onEdit = () => {
+      editTask.render();
+      container.replaceChild(editTask.element, task.element);
+      task.unrender();
+    };
+    editTask.onSubmit = () => {
+      task.render();
+      container.replaceChild(task.element, editTask.element);
+      editTask.unrender();
+    };
+    task.render();
+    fragment.appendChild(task.element);
+  });
+  container.appendChild(fragment);
 };
 
-renderTasks(boardTasksElement, tasksNumber);
+renderTasks(generateTasks(TASKS_NUMBER), boardTasksElement);
 
 // обработка кликов по фильтрам
 const mainFilterClickHandler = (evt) => {
   evt.preventDefault();
   boardTasksElement.innerHTML = ``;
-  renderTasks(boardTasksElement, getRandomInteger(1, 8));
+  renderTasks(generateTasks(getRandomInteger(1, 8)), boardTasksElement);
 };
 
 mainFilterElement.addEventListener(`click`, mainFilterClickHandler);

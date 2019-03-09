@@ -9,7 +9,7 @@ const getTags = (array) => new Set(getMixedArray(array).slice(0, getRandomIntege
 
 const castLots = () => getRandomInteger(1) === 1;
 
-export const generateTask = () => {
+const generateTask = () => {
   const task = {
     title: getRandomElement(Titles),
     tags: getTags(Tags),
@@ -34,4 +34,6 @@ export const generateTask = () => {
 
   return task;
 };
+
+export default (number) => (new Array(number)).fill(``).map(() => generateTask());
 
