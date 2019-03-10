@@ -52,16 +52,24 @@ const renderTasks = (tasks, container) => {
   const fragment = document.createDocumentFragment();
   tasks.forEach((item, index) => {
     const task = new Task(item, index + 1);
-    const editTask = new TaskEdit(item, index + 1);
+    /*
+    Там создаётся сразу два объекта: на редактирование и обычный.
+    Но по факту на редактирование не нужен сразу.
+    Надо его создавать только в тот момент,
+    когда будет редактирование в идеальном сценарии.
+
+    // Ты такое решение имел в виду?
+    */
     task.onEdit = () => {
+      const editTask = new TaskEdit(item, index + 1);
       editTask.render();
       container.replaceChild(editTask.element, task.element);
       task.unrender();
-    };
-    editTask.onSubmit = () => {
-      task.render();
-      container.replaceChild(task.element, editTask.element);
-      editTask.unrender();
+      editTask.onSubmit = () => {
+        task.render();
+        container.replaceChild(task.element, editTask.element);
+        editTask.unrender();
+      };
     };
     task.render();
     fragment.appendChild(task.element);
