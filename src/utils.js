@@ -43,6 +43,4 @@ export const getTime = (date) => {
   return `${hours % 12 < 10 ? `0${hours % 12}` : hours % 12}:${minutes < 10 ? `0${minutes}` : minutes} ${timeOfDay}`;
 };
 
-export const identity = (item) => item;
-
 

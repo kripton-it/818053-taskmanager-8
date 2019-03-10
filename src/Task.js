@@ -1,4 +1,4 @@
-import {getDate, getTime, identity, Colors} from './utils.js';
+import {getDate, getTime, Colors} from './utils.js';
 import Component from './Component.js';
 export default class Task extends Component {
   constructor(task, index) {
@@ -28,7 +28,7 @@ export default class Task extends Component {
   }
 
   get template() {
-    const isRepeating = Object.values(this._repeatingDays).some(identity);
+    const isRepeating = Object.values(this._repeatingDays).some((item) => item);
     const isOverdue = this._dueDate && Date.now() > this._dueDate;
     const dueDate = this._dueDate ? new Date(this._dueDate) : null;
     const repeatingClass = isRepeating ? ` card--repeat` : ``;
