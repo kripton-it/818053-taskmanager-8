@@ -1,7 +1,8 @@
-import {getDate, getTime, identity, Colors} from './utils.js';
-
-export default class Task {
+import {getDate, getTime, Colors} from './utils.js';
+import Component from './Component.js';
+export default class Task extends Component {
   constructor(task, index) {
+    super();
     this._title = task.title;
     this._dueDate = task.hasOwnProperty(`dueDate`) ? task.dueDate : null;
     this._tags = task.tags;
@@ -10,7 +11,6 @@ export default class Task {
     this._color = task.hasOwnProperty(`color`) ? task.color : `black`;
     this._isFavorite = task.isFavorite;
     this._isDone = task.isDone;
-    this._element = null;
     this._onEdit = null;
     this._index = index;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
@@ -23,16 +23,12 @@ export default class Task {
     }
   }
 
-  get element() {
-    return this._element;
-  }
-
   set onEdit(fn) {
     this._onEdit = fn;
   }
 
   get template() {
-    const isRepeating = Object.values(this._repeatingDays).some(identity);
+    const isRepeating = Object.values(this._repeatingDays).some((item) => item);
     const isOverdue = this._dueDate && Date.now() > this._dueDate;
     const dueDate = this._dueDate ? new Date(this._dueDate) : null;
     const repeatingClass = isRepeating ? ` card--repeat` : ``;
@@ -208,26 +204,13 @@ export default class Task {
   `.trim();
   }
 
-  render() {
-    const newElement = document.createElement(`div`);
-    newElement.innerHTML = this.template;
-    this._element = newElement.firstChild;
-    this.bind();
-    return this._element;
-  }
-
-  bind() {
+  createListeners() {
     this._element.querySelector(`.card__btn--edit`)
         .addEventListener(`click`, this._onEditButtonClick);
   }
 
-  unbind() {
+  removeListeners() {
     this._element.querySelector(`.card__btn--edit`)
         .removeEventListener(`click`, this._onEditButtonClick);
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
   }
 }

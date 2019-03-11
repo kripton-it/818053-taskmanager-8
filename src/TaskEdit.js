@@ -1,7 +1,8 @@
-import {getDate, getTime, identity, Colors} from './utils.js';
-
-export default class TaskEdit {
+import {getDate, getTime, Colors} from './utils.js';
+import Component from './Component.js';
+export default class TaskEdit extends Component {
   constructor(task, index) {
+    super();
     this._title = task.title;
     this._dueDate = task.hasOwnProperty(`dueDate`) ? task.dueDate : null;
     this._tags = task.tags;
@@ -10,7 +11,6 @@ export default class TaskEdit {
     this._color = task.hasOwnProperty(`color`) ? task.color : `black`;
     this._isFavorite = task.isFavorite;
     this._isDone = task.isDone;
-    this._element = null;
     this._onSubmit = null;
     this._index = index;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
@@ -27,12 +27,8 @@ export default class TaskEdit {
     this._onSubmit = fn;
   }
 
-  get element() {
-    return this._element;
-  }
-
   get template() {
-    const isRepeating = Object.values(this._repeatingDays).some(identity);
+    const isRepeating = Object.values(this._repeatingDays).some((item) => item);
     const isOverdue = this._dueDate && Date.now() > this._dueDate;
     const dueDate = this._dueDate ? new Date(this._dueDate) : null;
     const repeatingClass = isRepeating ? ` card--repeat` : ``;
@@ -66,8 +62,7 @@ export default class TaskEdit {
           class="card__text"
           placeholder="Start typing your text here..."
           name="text"
-        >
-          ${this._title}</textarea
+        >${this._title}</textarea
         >
       </label>
     </div>`;
@@ -210,25 +205,12 @@ export default class TaskEdit {
   `.trim();
   }
 
-  render() {
-    const newElement = document.createElement(`div`);
-    newElement.innerHTML = this.template;
-    this._element = newElement.firstChild;
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
-  }
-
-  bind() {
+  createListeners() {
     this._element.querySelector(`.card__form`)
         .addEventListener(`submit`, this._onSubmitButtonClick);
   }
 
-  unbind() {
+  removeListeners() {
     this._element.querySelector(`.card__form`)
         .removeEventListener(`submit`, this._onSubmitButtonClick);
   }
