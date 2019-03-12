@@ -8,6 +8,7 @@ export default class Component {
       throw new Error(`Can't instantiate Component, only concrete one.`);
     }
     this._element = null;
+    this._state = {};
   }
 
   get element() {
@@ -43,5 +44,9 @@ export default class Component {
     // Объявляем и оставляем пустой. Переопределим их в наследниках.
     // А если нам потребуется создать компонент без подписки на события,
     // то пустая реализация позволит это сделать.
+  }
+
+  update() {
+
   }
 }

@@ -50,26 +50,46 @@ mainFilterElement.insertAdjacentHTML(
 // отрисовка массива карточек
 const renderTasks = (tasks, container) => {
   const fragment = document.createDocumentFragment();
-  tasks.forEach((item, index) => {
-    const task = new Task(item, index + 1);
-    /*
-    Там создаётся сразу два объекта: на редактирование и обычный.
-    Но по факту на редактирование не нужен сразу.
-    Надо его создавать только в тот момент,
-    когда будет редактирование в идеальном сценарии.
-
-    // Ты такое решение имел в виду?
-    */
+  tasks.forEach((item) => {
+    const task = new Task(item);
+    // колбэк для перехода в режим редактирования
     task.onEdit = () => {
-      const editTask = new TaskEdit(item, index + 1);
-      editTask.render();
-      container.replaceChild(editTask.element, task.element);
-      task.unrender();
-      editTask.onSubmit = () => {
+      const editTask = new TaskEdit(item);
+      const onSubmit = (newObject) => {
+        item.title = newObject.title;
+        item.tags = newObject.tags;
+        item.color = newObject.color;
+        item.repeatingDays = newObject.repeatingDays;
+        if (newObject.hasOwnProperty(`dueDate`)) {
+          item.dueDate = newObject.dueDate;
+        }
+
+        task.update(item);
         task.render();
         container.replaceChild(task.element, editTask.element);
         editTask.unrender();
       };
+      const onChange = (newObject) => {
+        item.title = newObject.title;
+        item.tags = newObject.tags;
+        item.color = newObject.color;
+        item.repeatingDays = newObject.repeatingDays;
+        item.dueDate = newObject.dueDate;
+        // item.picture = newObject.picture;
+
+        const oldElem = editTask.element;
+        editTask.update(item);
+        const newElem = editTask.render();
+        container.replaceChild(newElem, oldElem);
+        // editTask.unrender();
+      };
+      editTask.render();
+      container.replaceChild(editTask.element, task.element);
+      task.unrender();
+      // колбэк для выхода из режима редактирования
+      editTask.onSubmit = onSubmit;
+      editTask.onChangeDate = onChange;
+      editTask.onChangeRepeating = onChange;
     };
     task.render();
     fragment.appendChild(task.element);
