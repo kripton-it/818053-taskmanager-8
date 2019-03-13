@@ -1,4 +1,5 @@
 import Component from './Component.js';
+import moment from 'moment';
 export default class Task extends Component {
   constructor(task) {
     super();
@@ -12,6 +13,9 @@ export default class Task extends Component {
     this._isDone = task.isDone;
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
+    this._state.isDate = task.hasOwnProperty(`dueDate`);
+    this._state.isRepeating = this._isRepeating();
+    this._state.isOverdue = this._state.isDate && Date.now() > this._dueDate;
   }
 
   _onEditButtonClick(evt) {
@@ -25,11 +29,13 @@ export default class Task extends Component {
     this._onEdit = fn;
   }
 
+  _isRepeating() {
+    return Object.values(this._repeatingDays).some((item) => item === true);
+  }
+
   get template() {
-    const isRepeating = Object.values(this._repeatingDays).some((item) => item);
-    const isOverdue = this._dueDate && Date.now() > this._dueDate;
-    const repeatingClass = isRepeating ? ` card--repeat` : ``;
-    const overdueClass = (this._dueDate && isOverdue) ? ` card--deadline` : ``;
+    const repeatingClass = this._state.isRepeating ? ` card--repeat` : ``;
+    const overdueClass = (this._state.isDate && this._state.isOverdue) ? ` card--deadline` : ``;
 
     const cardControl = `<div class="card__control">
       <button type="button" class="card__btn card__btn--edit">
@@ -79,8 +85,13 @@ export default class Task extends Component {
       </span>
       `.trim()).join(``);
 
+    const cardDates = `<div class="card__dates">
+      ${this._state.isDate ? moment(this._dueDate).format(`DD MMMM hh:mm`) : ``}
+    </div>`;
+
     const cardDetails = `<div class="card__details">
-      <div class="card__hashtag">
+    ${cardDates}
+    <div class="card__hashtag">
         <div class="card__hashtag-list">
           ${hashtags}
         </div>

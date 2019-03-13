@@ -1,6 +1,6 @@
 import {getDate, getTime, Colors} from './utils.js';
 import Component from './Component.js';
-import flatpickr from "flatpickr";
+import flatpickr from 'flatpickr';
 export default class TaskEdit extends Component {
   constructor(task) {
     super();
@@ -145,9 +145,8 @@ export default class TaskEdit extends Component {
   }
 
   get template() {
-    // const isOverdue = this._dueDate && Date.now() > this._dueDate;
     const dueDate = this._state.isDate ? new Date(this._dueDate) : null;
-    const repeatingClass = this._isRepeating() ? ` card--repeat` : ``;
+    const repeatingClass = this._state.isRepeating ? ` card--repeat` : ``;
     const overdueClass = (this._state.isDate && this._state.isOverdue) ? ` card--deadline` : ``;
     const repeatingDays = Object.keys(this._repeatingDays);
 
