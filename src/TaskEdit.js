@@ -1,5 +1,6 @@
 import {getDate, getTime, Colors} from './utils.js';
 import Component from './Component.js';
+import flatpickr from "flatpickr";
 export default class TaskEdit extends Component {
   constructor(task) {
     super();
@@ -317,6 +318,11 @@ export default class TaskEdit extends Component {
     this._element.querySelector(`.card__form`).addEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.card__date-deadline-toggle`).addEventListener(`click`, this._onToggleDate);
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onToggleRepeating);
+
+    if (this._state.isDate) {
+      flatpickr(`.card__date`, {altInput: true, altFormat: `j F`, dateFormat: `j F`});
+      flatpickr(`.card__time`, {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`});
+    }
   }
 
   removeListeners() {

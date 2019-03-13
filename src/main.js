@@ -75,13 +75,11 @@ const renderTasks = (tasks, container) => {
         item.color = newObject.color;
         item.repeatingDays = newObject.repeatingDays;
         item.dueDate = newObject.dueDate;
-        // item.picture = newObject.picture;
 
         const oldElem = editTask.element;
         editTask.update(item);
         const newElem = editTask.render();
         container.replaceChild(newElem, oldElem);
-        // editTask.unrender();
       };
       editTask.render();
       container.replaceChild(editTask.element, task.element);
