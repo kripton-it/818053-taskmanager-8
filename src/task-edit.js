@@ -1,7 +1,18 @@
 import {getDate, getTime, Colors} from './utils.js';
-import Component from './Component.js';
+import Component from './component.js';
 import flatpickr from 'flatpickr';
+
+/**
+  * Класс задачи в режиме редактирования.
+  */
 export default class TaskEdit extends Component {
+  /**
+   * Создает экземпляр TaskEdit.
+   *
+   * @constructor
+   * @param {Object} task - объект с данными задачи
+   * @this  {TaskEdit}
+   */
   constructor(task) {
     super();
     this._title = task.title;
@@ -23,16 +34,20 @@ export default class TaskEdit extends Component {
     this._state.isOverdue = this._state.isDate && Date.now() > this._dueDate;
   }
 
+  /**
+   * Метод-обработчик для добавления/удаления даты дедлайна для задачи.
+   */
   _onToggleDate() {
     // переключаем флаг
     this._state.isDate = !this._state.isDate;
     // убираем обработчики
-    this.removeListeners();
+    this._removeListeners();
 
     // забираем данные из формы (массив массивов [поле, значение]),
     const formData = new FormData(this._element.querySelector(`.card__form`));
 
-    // но имена полей формы из разметки не всегда совпадают с соответствующими полями компонента,
+    // но имена полей формы из разметки не всегда совпадают
+    // с соответствующими полями компонента,
     // поэтому нужен вспомогательный метод _processForm
     // для конвертации информации из формы в формат, понятный компоненту
     const newData = this._processForm(formData);
@@ -46,14 +61,17 @@ export default class TaskEdit extends Component {
     // обновляем из шаблона
     this._partialUpdate();
     // навешиваем обработчики
-    this.createListeners();
+    this._createListeners();
   }
 
+  /**
+   * Метод-обработчик для добавления/удаления повторяющихся дней для задачи.
+   */
   _onToggleRepeating() {
     // переключаем флаг
     this._state.isRepeating = !this._state.isRepeating;
     // убираем обработчики
-    this.removeListeners();
+    this._removeListeners();
 
     // забираем данные из формы (массив массивов [поле, значение]),
     const formData = new FormData(this._element.querySelector(`.card__form`));
@@ -72,39 +90,59 @@ export default class TaskEdit extends Component {
     // обновляем из шаблона
     this._partialUpdate();
     // навешиваем обработчики
-    this.createListeners();
+    this._createListeners();
   }
 
+  /**
+   * Метод для определения, заданы ли дни повтора для задачи.
+   * @return  {boolean}
+   */
   _isRepeating() {
-    return Object.values(this._repeatingDays).some((item) => item === true);
+    return Object.values(this._repeatingDays).some((day) => day);
   }
 
+  /**
+   * Метод-обработчик нажатия на кнопку Save.
+   * @param {Object} evt - объект события Event
+   */
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
-    // забираем данные из формы (массив массивов [поле, значение]),
+    /**
+     * забираем данные из формы (массив массивов [поле, значение]),
+     */
     const formData = new FormData(this._element.querySelector(`.card__form`));
 
-    // но имена полей формы из разметки не всегда совпадают с соответствующими полями компонента,
-    // поэтому нужен вспомогательный метод _processForm
-    // для конвертации информации из формы в формат, понятный компоненту
+    /**
+     * но имена полей формы из разметки не всегда совпадают
+     * с соответствующими полями компонента,
+     * поэтому нужен вспомогательный метод _processForm
+     * для конвертации информации из формы в формат, понятный компоненту
+     */
     const newData = this._processForm(formData);
     if (typeof this._onSubmit === `function`) {
       this._onSubmit(newData);
     }
 
-    // передаём информацию из формы в понятном для компонента формате в метод update
+    /**
+     * передаём информацию из формы в понятном для компонента формате в метод update
+     */
     this.update(newData);
   }
 
+  /**
+   * Вспомогательный метод для конвертации информации из формы в формат, понятный компоненту.
+   * @param {Array} formData - данные из формы (массив массивов [поле, значение])
+   * @return {Object} - объект, в который записана информация из формы
+   */
   _processForm(formData) {
-    // новый пустой объект, в который будет записана информация из формы
-    // (пока что создаётся вручную)
-    // formData - массив массивов [поле, значение]
+    /**
+     * заготовка объекта, в который будет записана информация из формы
+     * (пока что создаётся вручную)
+     */
     const entry = {
       title: ``,
       color: ``,
       tags: new Set(),
-      // dueDate: Date.now(),
       repeatingDays: {
         'mo': false,
         'tu': false,
@@ -116,34 +154,57 @@ export default class TaskEdit extends Component {
       }
     };
 
-    // вызываем статический метод для генерации маппера
+    /**
+     * вызываем статический метод для генерации маппера
+     */
     const taskEditMapper = TaskEdit.createMapper(entry);
 
     for (const pair of formData.entries()) {
-      // для каждого массива [поле, значение] деструктурируем его в отдельные переменные,
-      // и вызываем (если существует) соответствующую функцию из маппера
+      /**
+       * для каждого массива [поле, значение] деструктурируем его в отдельные переменные,
+       * и вызываем (если существует) соответствующую функцию из маппера
+       */
       const [property, value] = pair;
       if (taskEditMapper.hasOwnProperty(property)) {
         taskEditMapper[property](value);
       }
     }
 
-    // возвращаем модифицированный объект
+    /**
+     * возвращаем модифицированный объект
+     */
     return entry;
   }
 
+  /**
+   * Сеттер для передачи колбэка по нажатию на кнопку Save.
+   * @param {Function} fn - передаваемая функция-колбэк
+   */
   set onSubmit(fn) {
     this._onSubmit = fn;
   }
 
+  /**
+   * Сеттер для передачи колбэка по нажатию на кнопку включения/выключения даты дедлайна.
+   * @param {Function} fn - передаваемая функция-колбэк
+   */
   set onChangeDate(fn) {
     this._onChangeDate = fn;
   }
 
+  /**
+   * Сеттер для передачи колбэка по нажатию на кнопку включения/выключения режима повтора.
+   * @param {Function} fn - передаваемая функция-колбэк
+   */
   set onChangeRepeating(fn) {
     this._onChangeRepeating = fn;
   }
 
+  /**
+   * Геттер для получения шаблонной строки задачи.
+   *
+   * @return  {string} шаблонная строка
+   */
   get template() {
     const dueDate = this._state.isDate ? new Date(this._dueDate) : null;
     const repeatingClass = this._state.isRepeating ? ` card--repeat` : ``;
@@ -313,7 +374,10 @@ export default class TaskEdit extends Component {
   `.trim();
   }
 
-  createListeners() {
+  /**
+    * Метод для навешивания обработчиков.
+    */
+  _createListeners() {
     this._element.querySelector(`.card__form`).addEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.card__date-deadline-toggle`).addEventListener(`click`, this._onToggleDate);
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onToggleRepeating);
@@ -324,16 +388,26 @@ export default class TaskEdit extends Component {
     }
   }
 
-  removeListeners() {
+  /**
+    * Метод для удаления обработчиков.
+    */
+  _removeListeners() {
     this._element.querySelector(`.card__form`).removeEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.card__date-deadline-toggle`).removeEventListener(`click`, this._onToggleDate);
     this._element.querySelector(`.card__repeat-toggle`).removeEventListener(`click`, this._onToggleRepeating);
   }
 
+  /**
+    * Метод для частичного обновления.
+    */
   _partialUpdate() {
     this._element.innerHTML = this.template;
   }
 
+  /**
+    * Метод для обновления данных.
+    * @param {Object} data - объект с данными для обновления.
+    */
   update(data) {
     this._title = data.title;
     this._tags = data.tags;
@@ -342,10 +416,12 @@ export default class TaskEdit extends Component {
     this._dueDate = data.dueDate;
   }
 
-  // статический метод для преобразования данных;
-  // его задача - сопоставить поля формы с полями структуры и записать в них полученные значения;
-  // возвращает новый объект, поля которого - это функции для преобразования значений из соответствующих полей формы
-  // именно здесь можно регулировать, какие поля в структуре обновлять (и как)
+  /**
+    * Статический метод для преобразования данных.
+    * Его задача - сопоставить поля формы с полями структуры и записать в них полученные значения.
+    * @param {Object} target - объект, в который будет записан результат преобразования.
+    * @return {Object} - новый объект, поля которого - это функции для преобразования значений из соответствующих полей формы и записи результата в target.
+    */
   static createMapper(target) {
     return {
       hashtag: (value) => target.tags.add(value),

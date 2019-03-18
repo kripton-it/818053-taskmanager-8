@@ -1,6 +1,17 @@
-import Component from './Component.js';
+import Component from './component.js';
 import moment from 'moment';
+
+/**
+  * Класс задачи в режиме просмотра.
+  */
 export default class Task extends Component {
+  /**
+   * Создает экземпляр Task.
+   *
+   * @constructor
+   * @param {Object} task - объект с данными задачи
+   * @this  {Task}
+   */
   constructor(task) {
     super();
     this._title = task.title;
@@ -18,6 +29,10 @@ export default class Task extends Component {
     this._state.isOverdue = this._state.isDate && Date.now() > this._dueDate;
   }
 
+  /**
+   * Метод-обработчик нажатия на кнопку Edit.
+   * @param {Object} evt - объект события Event
+   */
   _onEditButtonClick(evt) {
     evt.preventDefault();
     if (typeof this._onEdit === `function`) {
@@ -25,14 +40,27 @@ export default class Task extends Component {
     }
   }
 
+  /**
+   * Сеттер для передачи колбэка по нажатию на кнопку Edit.
+   * @param {Function} fn - передаваемая функция-колбэк
+   */
   set onEdit(fn) {
     this._onEdit = fn;
   }
 
+  /**
+   * Метод для определения, заданы ли дни повтора для задачи.
+   * @return  {boolean}
+   */
   _isRepeating() {
-    return Object.values(this._repeatingDays).some((item) => item === true);
+    return Object.values(this._repeatingDays).some((day) => day);
   }
 
+  /**
+   * Геттер для получения шаблонной строки задачи.
+   *
+   * @return  {string} шаблонная строка
+   */
   get template() {
     const repeatingClass = this._state.isRepeating ? ` card--repeat` : ``;
     const overdueClass = (this._state.isDate && this._state.isOverdue) ? ` card--deadline` : ``;
@@ -114,12 +142,18 @@ export default class Task extends Component {
   `.trim();
   }
 
-  createListeners() {
+  /**
+    * Метод для навешивания обработчиков.
+    */
+  _createListeners() {
     this._element.querySelector(`.card__btn--edit`)
         .addEventListener(`click`, this._onEditButtonClick);
   }
 
-  removeListeners() {
+  /**
+    * Метод для удаления обработчиков.
+    */
+  _removeListeners() {
     this._element.querySelector(`.card__btn--edit`)
         .removeEventListener(`click`, this._onEditButtonClick);
   }
@@ -127,6 +161,11 @@ export default class Task extends Component {
   /*
   Задача метода update – перезаписать в компонент обновленные данные. Независимо от того, откуда они придут.
   */
+
+  /**
+    * Метод для обновления данных.
+    * @param {Object} data - объект с данными для обновления.
+    */
   update(data) {
     this._title = data.title;
     this._tags = data.tags;
