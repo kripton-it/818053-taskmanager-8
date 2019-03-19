@@ -56,13 +56,13 @@ mainFilterElement.insertAdjacentHTML(
  */
 const renderTasks = (tasks, container) => {
   const fragment = document.createDocumentFragment();
-  tasks.forEach((item) => {
+  tasks.forEach((item, index) => {
     const task = new Task(item);
     /**
      * колбэк для перехода в режим редактирования
      */
     task.onEdit = () => {
-      const editTask = new TaskEdit(item);
+      const editTask = new TaskEdit(item, index);
       /**
        * колбэк для выхода из режима редактирования
        * @param {Object} newObject - объект, из которого обновляется информация
