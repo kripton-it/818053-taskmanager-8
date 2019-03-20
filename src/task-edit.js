@@ -28,7 +28,9 @@ export default class TaskEdit extends Component {
     this._onSubmit = null;
     this._onChangeDate = null;
     this._onChangeRepeating = null;
+    this._onDelete = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
+    this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._onToggleDate = this._onToggleDate.bind(this);
     this._onToggleRepeating = this._onToggleRepeating.bind(this);
     this._state.isDate = task.hasOwnProperty(`dueDate`);
@@ -132,6 +134,17 @@ export default class TaskEdit extends Component {
   }
 
   /**
+   * Метод-обработчик нажатия на кнопку Delete.
+   * @param {Object} evt - объект события Event
+   */
+  _onDeleteButtonClick(evt) {
+    evt.preventDefault();
+    if (typeof this._onDelete === `function`) {
+      this._onDelete();
+    }
+  }
+
+  /**
    * Вспомогательный метод для конвертации информации из формы в формат, понятный компоненту.
    * @param {Array} formData - данные из формы (массив массивов [поле, значение])
    * @return {Object} - объект, в который записана информация из формы
@@ -200,6 +213,14 @@ export default class TaskEdit extends Component {
    */
   set onChangeRepeating(fn) {
     this._onChangeRepeating = fn;
+  }
+
+  /**
+   * Сеттер для передачи колбэка по нажатию на кнопку Delete.
+   * @param {Function} fn - передаваемая функция-колбэк
+   */
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
 
   /**
@@ -383,6 +404,7 @@ export default class TaskEdit extends Component {
     this._element.querySelector(`.card__form`).addEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.card__date-deadline-toggle`).addEventListener(`click`, this._onToggleDate);
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onToggleRepeating);
+    this._element.querySelector(`.card__delete`).addEventListener(`click`, this._onDeleteButtonClick);
 
     if (this._state.isDate) {
       flatpickr(`.card__date`, {altInput: true, altFormat: `j F`, dateFormat: `j F`});
@@ -397,6 +419,7 @@ export default class TaskEdit extends Component {
     this._element.querySelector(`.card__form`).removeEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.card__date-deadline-toggle`).removeEventListener(`click`, this._onToggleDate);
     this._element.querySelector(`.card__repeat-toggle`).removeEventListener(`click`, this._onToggleRepeating);
+    this._element.querySelector(`.card__delete`).removeEventListener(`click`, this._onDeleteButtonClick);
   }
 
   /**

@@ -40,6 +40,7 @@ const filters = [
 ];
 const boardTasksElement = document.querySelector(`.board__tasks`);
 const mainFilterElement = document.querySelector(`.main__filter`);
+const initialTasks = generateTasks(TASKS_NUMBER);
 
 /**
  * отрисовка фильтров
@@ -50,70 +51,94 @@ mainFilterElement.insertAdjacentHTML(
 );
 
 /**
- * функция для отрисовка массива карточек с задачами
+ * функция для замены одного объекта с данными в массиве объектов на другой
+ * @param {Array} tasks - массив с данными
+ * @param {Object} taskToUpdate - объект, который надо заменить
+ * @param {Object} newTask - новый объект
+ * @return {Object} новый объект
+ */
+const updateTask = (tasks, taskToUpdate, newTask) => {
+  const index = tasks.findIndex((it) => it === taskToUpdate);
+  tasks[index] = Object.assign({}, taskToUpdate, newTask);
+  return tasks[index];
+};
+
+/**
+ * функция для удаления одного объекта с данными в массиве объектов
+ * @param {Array} tasks - массив с данными
+ * @param {Object} tasktoDelete - объект, который надо удалить
+ * @return {Array} массив с удалённым объектом
+ */
+const deleteTask = (tasks, tasktoDelete) => {
+  const index = tasks.findIndex((it) => it === tasktoDelete);
+  tasks.splice(index, 1);
+  return tasks;
+};
+
+/**
+ * функция для отрисовки массива карточек с задачами
  * @param {Array} tasks - массив с данными
  * @param {Object} container - DOM-элемент, в который нужно отрисовать карточки с задачами
  */
 const renderTasks = (tasks, container) => {
   const fragment = document.createDocumentFragment();
-  tasks.forEach((item, index) => {
-    const task = new Task(item);
+  tasks.forEach((task, index) => {
+    const taskComponent = new Task(task);
     /**
      * колбэк для перехода в режим редактирования
      */
-    task.onEdit = () => {
-      const editTask = new TaskEdit(item, index);
+    taskComponent.onEdit = () => {
+      const editTaskComponent = new TaskEdit(task, index);
       /**
        * колбэк для выхода из режима редактирования
        * @param {Object} newObject - объект, из которого обновляется информация
        */
       const onSubmit = (newObject) => {
-        item.title = newObject.title;
-        item.tags = newObject.tags;
-        item.color = newObject.color;
-        item.repeatingDays = newObject.repeatingDays;
-        if (newObject.hasOwnProperty(`dueDate`)) {
-          item.dueDate = newObject.dueDate;
-        }
+        const updatedTask = updateTask(tasks, task, newObject);
 
-        task.update(item);
-        task.render();
-        container.replaceChild(task.element, editTask.element);
-        editTask.unrender();
+        taskComponent.update(updatedTask);
+        taskComponent.render();
+        container.replaceChild(taskComponent.element, editTaskComponent.element);
+        editTaskComponent.unrender();
       };
       /**
        * колбэк для добавления/удаления даты дедлайна и для включения/выключения дней повтора
        * @param {Object} newObject - объект, из которого обновляется информация
        */
       const onChange = (newObject) => {
-        item.title = newObject.title;
-        item.tags = newObject.tags;
-        item.color = newObject.color;
-        item.repeatingDays = newObject.repeatingDays;
-        item.dueDate = newObject.dueDate;
+        const updatedTask = updateTask(tasks, task, newObject);
 
-        const oldElem = editTask.element;
-        editTask.update(item);
-        const newElem = editTask.render();
+        const oldElem = editTaskComponent.element;
+        editTaskComponent.update(updatedTask);
+        const newElem = editTaskComponent.render();
         container.replaceChild(newElem, oldElem);
       };
-      editTask.render();
-      container.replaceChild(editTask.element, task.element);
-      task.unrender();
+      /**
+       * колбэк для нажатия на кнопку Delete
+       */
+      const onDelete = () => {
+        deleteTask(tasks, task);
+        container.removeChild(editTaskComponent.element);
+        editTaskComponent.unrender();
+      };
+      editTaskComponent.render();
+      container.replaceChild(editTaskComponent.element, taskComponent.element);
+      taskComponent.unrender();
       /**
        * передача колбэков
        */
-      editTask.onSubmit = onSubmit;
-      editTask.onChangeDate = onChange;
-      editTask.onChangeRepeating = onChange;
+      editTaskComponent.onSubmit = onSubmit;
+      editTaskComponent.onChangeDate = onChange;
+      editTaskComponent.onChangeRepeating = onChange;
+      editTaskComponent.onDelete = onDelete;
     };
-    task.render();
-    fragment.appendChild(task.element);
+    taskComponent.render();
+    fragment.appendChild(taskComponent.element);
   });
   container.appendChild(fragment);
 };
 
-renderTasks(generateTasks(TASKS_NUMBER), boardTasksElement);
+renderTasks(initialTasks, boardTasksElement);
 
 /**
  * обработчик кликов по фильтрам
