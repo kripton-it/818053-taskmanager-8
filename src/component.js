@@ -46,7 +46,7 @@ export default class Component {
    * Метод для создания DOM-элемента по шаблону.
    * Также навешивает все необходимые обработчики.
    *
-   * @return  {object} DOM-элемент
+   * @return {object} DOM-элемент
    */
   render() {
     const newElement = document.createElement(`div`);

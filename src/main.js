@@ -1,11 +1,12 @@
 import {getRandomInteger} from './utils.js';
-import getFilter from './get-filter.js';
+// import getFilter from './get-filter.js';
 import generateTasks from './generate-tasks.js';
 import Task from './task.js';
 import TaskEdit from './task-edit.js';
+import Filter from './filter.js';
 
 const TASKS_NUMBER = 7;
-const filters = [
+const FILTERS = [
   {
     caption: `All`,
     amount: getRandomInteger(20, 40),
@@ -14,12 +15,10 @@ const filters = [
   {
     caption: `Overdue`,
     amount: getRandomInteger(0, 5),
-    isDisabled: true,
   },
   {
     caption: `Today`,
     amount: getRandomInteger(0, 5),
-    isDisabled: true,
   },
   {
     caption: `Favorites`,
@@ -32,23 +31,17 @@ const filters = [
   {
     caption: `Tags`,
     amount: getRandomInteger(5, 10),
+    isDisabled: true,
   },
   {
     caption: `Archive`,
     amount: getRandomInteger(100, 200),
+    isDisabled: true,
   },
 ];
 const boardTasksElement = document.querySelector(`.board__tasks`);
 const mainFilterElement = document.querySelector(`.main__filter`);
 const initialTasks = generateTasks(TASKS_NUMBER);
-
-/**
- * отрисовка фильтров
- */
-mainFilterElement.insertAdjacentHTML(
-    `beforeend`,
-    filters.map((filter) => getFilter(filter)).reduce((acc, item) => acc + item, ``)
-);
 
 /**
  * функция для замены одного объекта с данными в массиве объектов на другой
@@ -81,6 +74,7 @@ const deleteTask = (tasks, tasktoDelete) => {
  * @param {Object} container - DOM-элемент, в который нужно отрисовать карточки с задачами
  */
 const renderTasks = (tasks, container) => {
+  container.innerHTML = ``;
   const fragment = document.createDocumentFragment();
   tasks.forEach((task, index) => {
     const taskComponent = new Task(task);
@@ -141,14 +135,64 @@ const renderTasks = (tasks, container) => {
 renderTasks(initialTasks, boardTasksElement);
 
 /**
- * обработчик кликов по фильтрам
- * @param {Object} evt - объект события Event
+ * функция для проверки, относится ли заданный момент времени к сегодня
+ * @param {number} timestamp - время в мс
+ * @return {Boolean}
  */
-const mainFilterClickHandler = (evt) => {
-  evt.preventDefault();
-  boardTasksElement.innerHTML = ``;
-  renderTasks(generateTasks(getRandomInteger(1, 8)), boardTasksElement);
+const isToday = (timestamp) => {
+  const date = new Date(timestamp);
+  const today = new Date();
+  return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
 };
 
-mainFilterElement.addEventListener(`click`, mainFilterClickHandler);
+/**
+ * функция для фильтрации массива объектов
+ * @param {Array} tasks - массив с данными
+ * @param {string} filterName - имя фильтра
+ * @return {Array} отфильтрованный массив
+ */
+const filterTasks = (tasks, filterName) => {
+  let result;
+  switch (filterName) {
+    case `filter__all`:
+      result = tasks;
+      break;
+
+    case `filter__overdue`:
+      result = tasks.filter((it) => it.dueDate && it.dueDate < Date.now());
+      break;
+
+    case `filter__today`:
+      result = tasks.filter((it) => it.dueDate && isToday(it.dueDate));
+      break;
+
+    case `filter__repeating`:
+      result = tasks.filter((it) => [...Object.entries(it.repeatingDays)]
+          .some((rec) => rec[1]));
+      break;
+  }
+  return result;
+};
+
+const renderFilters = (filters, container) => {
+  container.innerHTML = ``;
+  const fragment = document.createDocumentFragment();
+  filters.forEach((filter) => {
+    const filterComponent = new Filter(filter);
+    /**
+     * колбэк для клика по фильтру
+     * @param {Object} evt - объект события Event
+     */
+    filterComponent.onFilter = (evt) => {
+      const filterName = evt.target.id || evt.target.htmlFor;
+      const filteredTasks = filterTasks(initialTasks, filterName);
+      renderTasks(filteredTasks, boardTasksElement);
+    };
+    filterComponent.render();
+    fragment.appendChild(filterComponent.element);
+  });
+  container.appendChild(fragment);
+};
+
+renderFilters(FILTERS, mainFilterElement);
 
