@@ -58,6 +58,7 @@ const getDataForChart = (array, param) => array.reduce((acc, element) => {
 /**
  * функция для отрисовки диаграммы
  * @param {Object} config - объект с параметрами
+ * @return {Chart} экземпляр класса Chart с заданными параметрами
  */
 const renderChart = (config) => {
   config.target.parentNode.classList.remove(`visually-hidden`);
@@ -114,6 +115,7 @@ const renderChart = (config) => {
       }
     }
   });
+  return chart;
 };
 
 statControl.addEventListener(`click`, onStatControlClick);
