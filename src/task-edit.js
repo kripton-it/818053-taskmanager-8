@@ -1,4 +1,4 @@
-import {getDate, getTime, Colors} from './utils.js';
+import {getDate, getTime, TASK_COLORS} from './utils.js';
 import Component from './component.js';
 import flatpickr from 'flatpickr';
 
@@ -313,7 +313,7 @@ export default class TaskEdit extends Component {
       </span>
       `).join(``);
 
-    const colorInputs = Colors.map((color) => `<input
+    const colorInputs = TASK_COLORS.map((color) => `<input
       type="radio"
       id="color-${color}-${this._index}"
       class="card__color-input card__color-input--${color} visually-hidden"

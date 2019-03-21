@@ -1,4 +1,4 @@
-import {Colors, getRandomInteger, getRandomElement, getRandomDate, getMixedArray} from './utils.js';
+import {TASK_COLORS, getRandomInteger, getRandomElement, getRandomDate, getMixedArray} from './utils.js';
 
 const MAX_TAGS_NUMBER = 3;
 const Lots = [true, false, false, false, false];
@@ -28,7 +28,7 @@ const generateTask = () => {
     title: getRandomElement(Titles),
     tags: getTags(Tags),
     picture: `http://picsum.photos/100/100?r=${Math.random()}`,
-    color: getRandomElement(Colors),
+    color: getRandomElement(TASK_COLORS),
     repeatingDays: {
       'Mo': getRandomElement(Lots),
       'Tu': getRandomElement(Lots),

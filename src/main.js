@@ -1,9 +1,11 @@
-import {getRandomInteger} from './utils.js';
+import {STAT_COLORS, getRandomInteger, getMixedArray} from './utils.js';
 // import getFilter from './get-filter.js';
 import generateTasks from './generate-tasks.js';
 import Task from './task.js';
 import TaskEdit from './task-edit.js';
 import Filter from './filter.js';
+import './stat.js';
+import {renderChart, getDataForChart} from './stat.js';
 
 const TASKS_NUMBER = 7;
 const FILTERS = [
@@ -42,6 +44,22 @@ const FILTERS = [
 const boardTasksElement = document.querySelector(`.board__tasks`);
 const mainFilterElement = document.querySelector(`.main__filter`);
 const initialTasks = generateTasks(TASKS_NUMBER);
+const tags = getDataForChart(initialTasks, `tags`);
+const colors = getDataForChart(initialTasks, `color`);
+const tagsConfig = {
+  target: document.querySelector(`.statistic__tags`),
+  type: `tags`,
+  labels: tags.map((tag) => `#${tag.value}`),
+  dataSet: tags.map((tag) => tag.count),
+  colors: getMixedArray(STAT_COLORS).slice(0, tags.length)
+};
+const colorsConfig = {
+  target: document.querySelector(`.statistic__colors`),
+  type: `colors`,
+  labels: colors.map((color) => color.value),
+  dataSet: colors.map((color) => color.count),
+  colors: colors.map((color) => color.value)
+};
 
 /**
  * функция для замены одного объекта с данными в массиве объектов на другой
@@ -132,8 +150,6 @@ const renderTasks = (tasks, container) => {
   container.appendChild(fragment);
 };
 
-renderTasks(initialTasks, boardTasksElement);
-
 /**
  * функция для проверки, относится ли заданный момент времени к сегодня
  * @param {number} timestamp - время в мс
@@ -174,6 +190,11 @@ const filterTasks = (tasks, filterName) => {
   return result;
 };
 
+/**
+ * функция для отрисовки фильтров
+ * @param {Array} filters - массив объектов с данными о фильтрах
+ * @param {Object} container - DOM-элемент, в который нужно отрисовать фильтры
+ */
 const renderFilters = (filters, container) => {
   container.innerHTML = ``;
   const fragment = document.createDocumentFragment();
@@ -194,5 +215,9 @@ const renderFilters = (filters, container) => {
   container.appendChild(fragment);
 };
 
+renderTasks(initialTasks, boardTasksElement);
 renderFilters(FILTERS, mainFilterElement);
+renderChart(tagsConfig);
+renderChart(colorsConfig);
+
 

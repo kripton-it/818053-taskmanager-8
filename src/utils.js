@@ -12,7 +12,9 @@ const Unit = {
 
 const Months = [`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`, `October`, `November`, `December`];
 
-const Colors = [`black`, `yellow`, `blue`, `green`, `pink`];
+const TASK_COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
+
+const STAT_COLORS = [`#ff3cb9`, `#ffe125`, `#0c5cdd`, `#000000`, `#31b55c`, `#882200`, `#00ffff`, `#88ff00`];
 
 /**
  * Генерирует случайное целое число [min: max]
@@ -86,6 +88,6 @@ const getTime = (date) => {
   return `${hours % 12 < 10 ? `0${hours % 12}` : hours % 12}:${minutes < 10 ? `0${minutes}` : minutes} ${timeOfDay}`;
 };
 
-export {Colors, getRandomInteger, getRandomElement, getMixedArray, getRandomDate, getDate, getTime};
+export {TASK_COLORS, STAT_COLORS, getRandomInteger, getRandomElement, getMixedArray, getRandomDate, getDate, getTime};
 
 
