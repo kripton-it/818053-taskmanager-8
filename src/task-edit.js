@@ -1,5 +1,6 @@
 import {getDate, getTime, TASK_COLORS} from './utils.js';
 import Component from './component.js';
+import moment from 'moment';
 import flatpickr from 'flatpickr';
 
 /**
@@ -26,7 +27,6 @@ export default class TaskEdit extends Component {
     this._isFavorite = task.isFavorite;
     this._isDone = task.isDone;
     this._onSubmit = null;
-    this._onChangeDate = null;
     this._onChangeRepeating = null;
     this._onDelete = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
@@ -41,26 +41,12 @@ export default class TaskEdit extends Component {
   /**
    * Метод-обработчик для добавления/удаления даты дедлайна для задачи.
    */
-  _onToggleDate() {
+  _onToggleDate(evt) {
+    evt.preventDefault();
     // переключаем флаг
     this._state.isDate = !this._state.isDate;
     // убираем обработчики
     this._removeListeners();
-
-    // забираем данные из формы (массив массивов [поле, значение]),
-    const formData = new FormData(this._element.querySelector(`.card__form`));
-
-    // но имена полей формы из разметки не всегда совпадают
-    // с соответствующими полями компонента,
-    // поэтому нужен вспомогательный метод _processForm
-    // для конвертации информации из формы в формат, понятный компоненту
-    const newData = this._processForm(formData);
-    if (typeof this._onChangeDate === `function`) {
-      this._onChangeDate(newData);
-    }
-
-    // передаём информацию из формы в понятном для компонента формате в метод update
-    this.update(newData);
 
     // обновляем из шаблона
     this._partialUpdate();
@@ -99,7 +85,7 @@ export default class TaskEdit extends Component {
 
   /**
    * Метод для определения, заданы ли дни повтора для задачи.
-   * @return  {boolean}
+   * @return {boolean}
    */
   _isRepeating() {
     return Object.values(this._repeatingDays).some((day) => day);
@@ -200,14 +186,6 @@ export default class TaskEdit extends Component {
   }
 
   /**
-   * Сеттер для передачи колбэка по нажатию на кнопку включения/выключения даты дедлайна.
-   * @param {Function} fn - передаваемая функция-колбэк
-   */
-  set onChangeDate(fn) {
-    this._onChangeDate = fn;
-  }
-
-  /**
    * Сеттер для передачи колбэка по нажатию на кнопку включения/выключения режима повтора.
    * @param {Function} fn - передаваемая функция-колбэк
    */
@@ -223,13 +201,20 @@ export default class TaskEdit extends Component {
     this._onDelete = fn;
   }
 
+  get isDate() {
+    return this._state.isDate;
+  }
+
+  set isDate(isDate) {
+    this._state.isDate = isDate;
+  }
+
   /**
    * Геттер для получения шаблонной строки задачи.
    *
    * @return  {string} шаблонная строка
    */
   get template() {
-    const dueDate = this._state.isDate ? new Date(this._dueDate) : null;
     const repeatingClass = this._state.isRepeating ? ` card--repeat` : ``;
     const overdueClass = (this._state.isDate && this._state.isOverdue) ? ` card--deadline` : ``;
     const repeatingDays = Object.keys(this._repeatingDays);
@@ -267,13 +252,13 @@ export default class TaskEdit extends Component {
     </div>`;
 
     const cardDateDeadline = `
-      <fieldset class="card__date-deadline" ${!this._state.isDate && `disabled`}>
+      <fieldset class="card__date-deadline" ${this._state.isDate ? `` : `disabled`}>
         <label class="card__input-deadline-wrap">
-          <input class="card__date" type="text" placeholder="23 September" value="${this._state.isDate ? getDate(dueDate) : ``}" name="date" />
+          <input class="card__date" type="text" placeholder="23 September" value="${this._state.isDate && this._dueDate ? moment(this._dueDate).format(`DD MMMM`) : moment().format(`DD MMMM`)}" name="date" />
         </label>
 
         <label class="card__input-deadline-wrap">
-          <input class="card__time" type="text" placeholder="11:15 PM" value="${this._state.isDate ? getTime(dueDate) : ``}" name="time" />
+          <input class="card__time" type="text" placeholder="15:00" value="${this._state.isDate && this._dueDate ? moment(this._dueDate).format(`HH:mm`) : moment().format(`HH:mm`)}" name="time" />
         </label>
       </fieldset>
     `.trim();
@@ -406,9 +391,11 @@ export default class TaskEdit extends Component {
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onToggleRepeating);
     this._element.querySelector(`.card__delete`).addEventListener(`click`, this._onDeleteButtonClick);
 
+    console.log(`isDate: ${this._state.isDate}`);
+
     if (this._state.isDate) {
       flatpickr(`.card__date`, {altInput: true, altFormat: `j F`, dateFormat: `j F`});
-      flatpickr(`.card__time`, {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`});
+      flatpickr(`.card__time`, {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
     }
   }
 
@@ -454,6 +441,10 @@ export default class TaskEdit extends Component {
       color: (value) => (target.color = value),
       repeat: (value) => (target.repeatingDays[value] = true),
       date: (value) => (target.dueDate = Date.parse(`${value}, 2019`)),
+      time: (value) => {
+        const [hours, minutes] = value.split(`:`);
+        target.dueDate += 1000 * 60 * (+hours * 60 + +minutes);
+      },
     };
   }
 }

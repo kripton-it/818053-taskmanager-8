@@ -48,6 +48,14 @@ export default class Task extends Component {
     this._onEdit = fn;
   }
 
+  get isDate() {
+    return this._state.isDate;
+  }
+
+  set isDate(isDate) {
+    this._state.isDate = isDate;
+  }
+
   /**
    * Метод для определения, заданы ли дни повтора для задачи.
    * @return  {boolean}
@@ -64,7 +72,6 @@ export default class Task extends Component {
   get template() {
     const repeatingClass = this._state.isRepeating ? ` card--repeat` : ``;
     const overdueClass = (this._state.isDate && this._state.isOverdue) ? ` card--deadline` : ``;
-
     const cardControl = `<div class="card__control">
       <button type="button" class="card__btn card__btn--edit">
         edit
@@ -113,8 +120,9 @@ export default class Task extends Component {
       </span>
       `.trim()).join(``);
 
+    console.log(`template: ${this._state.isDate ? this._dueDate : `no date`}`);
     const cardDates = `<div class="card__dates">
-      ${this._state.isDate ? moment(this._dueDate).format(`DD MMMM hh:mm`) : ``}
+      ${this._state.isDate ? moment(this._dueDate).format(`DD MMMM HH:mm`) : ``}
     </div>`;
 
     const cardDetails = `<div class="card__details">
@@ -171,5 +179,7 @@ export default class Task extends Component {
     this._tags = data.tags;
     this._color = data.color;
     this._repeatingDays = data.repeatingDays;
+    this._dueDate = data.dueDate;
+    console.log(`update: ${this._dueDate}`);
   }
 }

@@ -107,24 +107,14 @@ const renderTasks = (tasks, container) => {
        */
       const onSubmit = (newObject) => {
         const updatedTask = updateTask(tasks, task, newObject);
-
         taskComponent.update(updatedTask);
+        taskComponent.isDate = editTaskComponent.isDate;
         taskComponent.render();
         container.replaceChild(taskComponent.element, editTaskComponent.element);
         editTaskComponent.unrender();
+        task = updatedTask;
       };
-      /**
-       * колбэк для добавления/удаления даты дедлайна и для включения/выключения дней повтора
-       * @param {Object} newObject - объект, из которого обновляется информация
-       */
-      const onChange = (newObject) => {
-        const updatedTask = updateTask(tasks, task, newObject);
 
-        const oldElem = editTaskComponent.element;
-        editTaskComponent.update(updatedTask);
-        const newElem = editTaskComponent.render();
-        container.replaceChild(newElem, oldElem);
-      };
       /**
        * колбэк для нажатия на кнопку Delete
        */
@@ -140,8 +130,6 @@ const renderTasks = (tasks, container) => {
        * передача колбэков
        */
       editTaskComponent.onSubmit = onSubmit;
-      editTaskComponent.onChangeDate = onChange;
-      editTaskComponent.onChangeRepeating = onChange;
       editTaskComponent.onDelete = onDelete;
     };
     taskComponent.render();
