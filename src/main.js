@@ -1,9 +1,7 @@
 import {STAT_COLORS, getRandomInteger, getMixedArray} from './utils.js';
-// import getFilter from './get-filter.js';
 import generateTasks from './generate-tasks.js';
 import Task from './task.js';
 import TaskEdit from './task-edit.js';
-// import Filter from './filter.js';
 import FiltersContainer from './filters-container.js';
 import './stat.js';
 import {renderChart, getDataForChart} from './stat.js';

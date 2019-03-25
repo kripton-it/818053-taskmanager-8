@@ -14,10 +14,6 @@ export default class FiltersContainer extends Component {
   constructor(filters) {
     super();
     this._filters = filters;
-    // this._captions = filters.map((filter) => filter.caption);
-    // this._amount = filters.map((filter) => filter.amount);
-    // this._state.isDisabled = filter.isDisabled;
-    // this._state.isChecked = filter.isChecked;
     this._onFilter = null;
     this._onFilterClick = this._onFilterClick.bind(this);
   }
