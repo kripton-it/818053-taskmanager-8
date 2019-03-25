@@ -3,7 +3,8 @@ import {STAT_COLORS, getRandomInteger, getMixedArray} from './utils.js';
 import generateTasks from './generate-tasks.js';
 import Task from './task.js';
 import TaskEdit from './task-edit.js';
-import Filter from './filter.js';
+// import Filter from './filter.js';
+import FiltersContainer from './filters-container.js';
 import './stat.js';
 import {renderChart, getDataForChart} from './stat.js';
 
@@ -185,22 +186,17 @@ const filterTasks = (tasks, filterName) => {
  */
 const renderFilters = (filters, container) => {
   container.innerHTML = ``;
-  const fragment = document.createDocumentFragment();
-  filters.forEach((filter) => {
-    const filterComponent = new Filter(filter);
-    /**
-     * колбэк для клика по фильтру
-     * @param {Object} evt - объект события Event
-     */
-    filterComponent.onFilter = (evt) => {
-      const filterName = evt.target.id || evt.target.htmlFor;
-      const filteredTasks = filterTasks(initialTasks, filterName);
-      renderTasks(filteredTasks, boardTasksElement);
-    };
-    filterComponent.render();
-    fragment.appendChild(filterComponent.element);
-  });
-  container.appendChild(fragment);
+  const filtersContainerComponent = new FiltersContainer(filters);
+  /**
+    * колбэк для клика по фильтру
+    * @param {Object} evt - объект события Event
+    */
+  filtersContainerComponent.onFilter = (evt) => {
+    const filterName = evt.target.id || evt.target.htmlFor;
+    const filteredTasks = filterTasks(initialTasks, filterName);
+    renderTasks(filteredTasks, boardTasksElement);
+  };
+  filtersContainerComponent.render(container);
 };
 
 renderTasks(initialTasks, boardTasksElement);

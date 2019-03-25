@@ -11,7 +11,6 @@ export default class Filter extends Component {
    * @param {Object} filter - объект с данными фильтра
    * @this  {Filter}
    */
-  // export default ({caption, amount, isDisabled = false, isChecked = false})
   constructor(filter) {
     super();
     this._caption = filter.caption;
