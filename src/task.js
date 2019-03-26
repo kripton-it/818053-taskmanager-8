@@ -10,7 +10,7 @@ export default class Task extends Component {
    *
    * @constructor
    * @param {Object} task - объект с данными задачи
-   * @this  {Task}
+   * @this {Task}
    */
   constructor(task) {
     super();
@@ -121,7 +121,6 @@ export default class Task extends Component {
       </span>
       `.trim()).join(``);
 
-    console.log(`template: ${this._state.isDate ? this._dueDate : `no date`}`);
     const cardDates = `<div class="card__dates">
       ${this._state.isDate ? moment(this._dueDate).format(`DD MMMM HH:mm`) : ``}
     </div>`;
@@ -181,6 +180,5 @@ export default class Task extends Component {
     this._color = data.color;
     this._repeatingDays = data.repeatingDays;
     this._dueDate = data.dueDate;
-    console.log(`update: ${this._dueDate}`);
   }
 }

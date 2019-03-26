@@ -1,4 +1,14 @@
+/**
+  * Класс-адаптер.
+  */
 export default class ModelTask {
+  /**
+   * Создает экземпляр ModelTask.
+   *
+   * @constructor
+   * @param {Object} data - объект с данными, пришедший с сервера
+   * @this {ModelTask}
+   */
   constructor(data) {
     this.id = data[`id`];
     this.title = data[`title`] || ``;
@@ -11,6 +21,10 @@ export default class ModelTask {
     this.isDone = Boolean(data[`is_done`]);
   }
 
+  /**
+   * Метод для преобразования в формат, понятный серверу.
+   * @return {object} - преобразованный объект
+   */
   toRAW() {
     return {
       'id': this.id,
@@ -25,10 +39,20 @@ export default class ModelTask {
     };
   }
 
+  /**
+   * Статический метод для преобразования одного таска.
+   * @param {Object} data - исходный объект с данными, пришедший с сервера
+   * @return {object} - преобразованный объект
+   */
   static parseTask(data) {
     return new ModelTask(data);
   }
 
+  /**
+   * Статический метод для преобразования массива тасков.
+   * @param {Array} data - массив с исходными объектами, пришедший с сервера
+   * @return {Array} - массив преобразованных объектов
+   */
   static parseTasks(data) {
     return data.map(ModelTask.parseTask);
   }

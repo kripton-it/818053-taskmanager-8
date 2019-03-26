@@ -1,4 +1,4 @@
-import {getDate, getTime, TASK_COLORS} from './utils.js';
+import {TASK_COLORS} from './utils.js';
 import Component from './component.js';
 import moment from 'moment';
 import flatpickr from 'flatpickr';
@@ -39,6 +39,7 @@ export default class TaskEdit extends Component {
 
   /**
    * Метод-обработчик для добавления/удаления даты дедлайна для задачи.
+   * @param {Object} evt - объект события Event
    */
   _onToggleDate(evt) {
     evt.preventDefault();
@@ -390,8 +391,6 @@ export default class TaskEdit extends Component {
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onToggleRepeating);
     this._element.querySelector(`.card__delete`).addEventListener(`click`, this._onDeleteButtonClick);
 
-    console.log(`isDate: ${this._state.isDate}`);
-
     if (this._state.isDate) {
       flatpickr(`.card__date`, {altInput: true, altFormat: `j F`, dateFormat: `j F`});
       flatpickr(`.card__time`, {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
@@ -445,5 +444,14 @@ export default class TaskEdit extends Component {
         target.dueDate += 1000 * 60 * (+hours * 60 + +minutes);
       },
     };
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._element.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
   }
 }

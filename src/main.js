@@ -60,35 +60,10 @@ const colorsConfig = {
   dataSet: colors.map((color) => color.count),
   colors: colors.map((color) => color.value)
 };
-
-/**
- * функция для замены одного объекта с данными в массиве объектов на другой
- * @param {Array} tasks - массив с данными
- * @param {Object} taskToUpdate - объект, который надо заменить
- * @param {Object} newTask - новый объект
- * @return {Object} новый объект
- */
-const updateTask = (tasks, taskToUpdate, newTask) => {
-  const target = tasks.find((it) => it === taskToUpdate);
-  for (const key in newTask) {
-    if (newTask[key]) {
-      target[key] = newTask[key];
-    }
-  }
-  return target;
-};
-
-/**
- * функция для удаления одного объекта с данными в массиве объектов
- * @param {Array} tasks - массив с данными
- * @param {Object} tasktoDelete - объект, который надо удалить
- * @return {Array} массив с удалённым объектом
- */
-const deleteTask = (tasks, tasktoDelete) => {
-  const index = tasks.findIndex((it) => it === tasktoDelete);
-  tasks.splice(index, 1);
-  return tasks;
-};
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
+const END_POINT = `https://es8-demo-srv.appspot.com/task-manager`;
+const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+const noTasksElement = document.querySelector(`.board__no-tasks`);
 
 /**
  * функция для отрисовки массива карточек с задачами
@@ -116,6 +91,7 @@ const renderTasks = (tasks, container) => {
         taskComponent.render();
         container.replaceChild(taskComponent.element, editTaskComponent.element);
         editTaskComponent.unrender();
+        task = newTask;
       };
 
       /**
@@ -123,17 +99,67 @@ const renderTasks = (tasks, container) => {
        * @param {Object} newObject - объект, из которого обновляется информация
        */
       const onSubmit = (newObject) => {
-        const updatedTask = updateTask(tasks, task, newObject);
-        api.updateTask({id: updatedTask.id, data: updatedTask.toRAW()}).then(rerender);
+        editTaskComponent.element.querySelector(`.card__inner`).style.borderColor = `#000000`;
+
+        for (const key in newObject) {
+          if (newObject[key]) {
+            task[key] = newObject[key];
+          }
+        }
+
+        block();
+        saveButton.textContent = `Saving...`;
+
+        api.updateTask({id: task.id, data: task.toRAW()})
+        .then((newTask) => {
+          unblock();
+          rerender(newTask);
+        })
+        .catch(() => {
+          unblock();
+          editTaskComponent.shake();
+          saveButton.textContent = `Save`;
+          editTaskComponent.element.querySelector(`.card__inner`).style.borderColor = `red`;
+        });
       };
 
       /**
        * колбэк для нажатия на кнопку Delete
        */
       const onDelete = ({id}) => {
-        api.deleteTask({id}).then(() => api.getTasks()).then((data) => renderTasks(data, container)).catch(console.warn);
+        editTaskComponent.element.querySelector(`.card__inner`).style.borderColor = `#000000`;
+        block();
+        deleteButton.textContent = `Deleting...`;
+        api.deleteTask({id})
+          .then(() => api.getTasks())
+          .then((data) => renderTasks(data, container))
+          .catch(() => {
+            unblock();
+            editTaskComponent.shake();
+            deleteButton.textContent = `Delete`;
+            editTaskComponent.element.querySelector(`.card__inner`).style.borderColor = `red`;
+          });
       };
       editTaskComponent.render();
+      const saveButton = editTaskComponent.element.querySelector(`.card__save`);
+      const deleteButton = editTaskComponent.element.querySelector(`.card__delete`);
+
+      /**
+       * блокировка формы
+       */
+      const block = () => {
+        saveButton.disabled = true;
+        deleteButton.disabled = true;
+      };
+
+      /**
+       * разблокировка формы
+       */
+      const unblock = () => {
+        saveButton.disabled = false;
+        deleteButton.disabled = false;
+      };
+
       container.replaceChild(editTaskComponent.element, taskComponent.element);
       taskComponent.unrender();
       /**
@@ -213,13 +239,16 @@ renderFilters(FILTERS, mainFilterElement);
 renderChart(tagsConfig);
 renderChart(colorsConfig);
 
-
-const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
-const END_POINT = `https://es8-demo-srv.appspot.com/task-manager`;
-
-const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+noTasksElement.textContent = `Loading tasks...`;
+noTasksElement.classList.remove(`visually-hidden`);
+boardTasksElement.classList.add(`visually-hidden`);
 
 api.getTasks()
   .then((tasks) => {
+    noTasksElement.classList.add(`visually-hidden`);
+    boardTasksElement.classList.remove(`visually-hidden`);
     renderTasks(tasks, boardTasksElement);
+  })
+  .catch(() => {
+    noTasksElement.textContent = `Something went wrong while loading your tasks. Check your connection or try again later`;
   });
