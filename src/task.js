@@ -14,6 +14,7 @@ export default class Task extends Component {
    */
   constructor(task) {
     super();
+    this._id = task.id;
     this._title = task.title;
     this._dueDate = task.hasOwnProperty(`dueDate`) ? task.dueDate : null;
     this._tags = task.tags;

@@ -5,6 +5,7 @@ import TaskEdit from './task-edit.js';
 import FiltersContainer from './filters-container.js';
 import './stat.js';
 import {renderChart, getDataForChart} from './stat.js';
+import API from './api.js';
 
 const TASKS_NUMBER = 7;
 const FILTERS = [
@@ -68,9 +69,13 @@ const colorsConfig = {
  * @return {Object} новый объект
  */
 const updateTask = (tasks, taskToUpdate, newTask) => {
-  const index = tasks.findIndex((it) => it === taskToUpdate);
-  tasks[index] = Object.assign({}, taskToUpdate, newTask);
-  return tasks[index];
+  const target = tasks.find((it) => it === taskToUpdate);
+  for (const key in newTask) {
+    if (newTask[key]) {
+      target[key] = newTask[key];
+    }
+  }
+  return target;
 };
 
 /**
@@ -93,34 +98,40 @@ const deleteTask = (tasks, tasktoDelete) => {
 const renderTasks = (tasks, container) => {
   container.innerHTML = ``;
   const fragment = document.createDocumentFragment();
-  tasks.forEach((task, index) => {
+  tasks.forEach((task) => {
     const taskComponent = new Task(task);
     /**
      * колбэк для перехода в режим редактирования
      */
     taskComponent.onEdit = () => {
-      const editTaskComponent = new TaskEdit(task, index);
+      const editTaskComponent = new TaskEdit(task);
+
+      /**
+     * функция для ререндеринга пришедшего с сервера таска
+     * @param {Object} newTask - пришедший с сервера таск
+     */
+      const rerender = (newTask) => {
+        taskComponent.update(newTask);
+        taskComponent.isDate = editTaskComponent.isDate;
+        taskComponent.render();
+        container.replaceChild(taskComponent.element, editTaskComponent.element);
+        editTaskComponent.unrender();
+      };
+
       /**
        * колбэк для выхода из режима редактирования
        * @param {Object} newObject - объект, из которого обновляется информация
        */
       const onSubmit = (newObject) => {
         const updatedTask = updateTask(tasks, task, newObject);
-        taskComponent.update(updatedTask);
-        taskComponent.isDate = editTaskComponent.isDate;
-        taskComponent.render();
-        container.replaceChild(taskComponent.element, editTaskComponent.element);
-        editTaskComponent.unrender();
-        task = updatedTask;
+        api.updateTask({id: updatedTask.id, data: updatedTask.toRAW()}).then(rerender);
       };
 
       /**
        * колбэк для нажатия на кнопку Delete
        */
-      const onDelete = () => {
-        deleteTask(tasks, task);
-        container.removeChild(editTaskComponent.element);
-        editTaskComponent.unrender();
+      const onDelete = ({id}) => {
+        api.deleteTask({id}).then(() => api.getTasks()).then((data) => renderTasks(data, container)).catch(console.warn);
       };
       editTaskComponent.render();
       container.replaceChild(editTaskComponent.element, taskComponent.element);
@@ -197,9 +208,18 @@ const renderFilters = (filters, container) => {
   filtersContainerComponent.render(container);
 };
 
-renderTasks(initialTasks, boardTasksElement);
+// renderTasks(initialTasks, boardTasksElement);
 renderFilters(FILTERS, mainFilterElement);
 renderChart(tagsConfig);
 renderChart(colorsConfig);
 
 
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
+const END_POINT = `https://es8-demo-srv.appspot.com/task-manager`;
+
+const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+
+api.getTasks()
+  .then((tasks) => {
+    renderTasks(tasks, boardTasksElement);
+  });

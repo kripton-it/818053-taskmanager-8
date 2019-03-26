@@ -12,12 +12,11 @@ export default class TaskEdit extends Component {
    *
    * @constructor
    * @param {Object} task - объект с данными задачи
-   * @param {number} index - индекс для уникальных id
    * @this  {TaskEdit}
    */
-  constructor(task, index) {
+  constructor(task) {
     super();
-    this._index = index;
+    this._id = task.id;
     this._title = task.title;
     this._dueDate = task.hasOwnProperty(`dueDate`) ? task.dueDate : null;
     this._tags = task.tags;
@@ -126,7 +125,7 @@ export default class TaskEdit extends Component {
   _onDeleteButtonClick(evt) {
     evt.preventDefault();
     if (typeof this._onDelete === `function`) {
-      this._onDelete();
+      this._onDelete({id: this._id});
     }
   }
 
@@ -266,12 +265,12 @@ export default class TaskEdit extends Component {
     const cardRepeatInputs = repeatingDays.map((day) => `<input
       class="visually-hidden card__repeat-day-input"
       type="checkbox"
-      id="repeat-${day.toLowerCase()}-${this._index}"
+      id="repeat-${day.toLowerCase()}-${this._id}"
       name="repeat"
       value="${day.toLowerCase()}"
       ${this._repeatingDays[day] && `checked`}
     />
-    <label class="card__repeat-day" for="repeat-${day.toLowerCase()}-${this._index}"
+    <label class="card__repeat-day" for="repeat-${day.toLowerCase()}-${this._id}"
       >${day.toLowerCase()}</label
     >`).join(``);
 
@@ -300,14 +299,14 @@ export default class TaskEdit extends Component {
 
     const colorInputs = TASK_COLORS.map((color) => `<input
       type="radio"
-      id="color-${color}-${this._index}"
+      id="color-${color}-${this._id}"
       class="card__color-input card__color-input--${color} visually-hidden"
       name="color"
       value="${color}"
       ${this._color === color && `checked`}
     />
     <label
-      for="color-${color}-${this._index}"
+      for="color-${color}-${this._id}"
       class="card__color card__color--${color}"
       >${color}</label
     >`).join(``);
