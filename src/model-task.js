@@ -12,11 +12,11 @@ export default class ModelTask {
   constructor(data) {
     this.id = data[`id`];
     this.title = data[`title`] || ``;
-    this.dueDate = new Date(data[`due_date`]);
+    this.dueDate = data[`due_date`] || null;
     this.tags = new Set(data[`tags`] || []);
     this.picture = data[`picture`] || ``;
     this.repeatingDays = data[`repeating_days`];
-    this.color = data[`color`];
+    this.color = data[`color`] || `black`;
     this.isFavorite = Boolean(data[`is_favorite`]);
     this.isDone = Boolean(data[`is_done`]);
   }

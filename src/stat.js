@@ -15,12 +15,13 @@ const statPeriodInput = document.querySelector(`.statistic__period-input`);
  * обработчик нажатия на кнопку Statistic
  * @param {Object} evt - массив объектов с данными о фильтрах
  */
+/*
 const onStatControlClick = (evt) => {
   evt.preventDefault();
   boardTasksElement.classList.toggle(`visually-hidden`);
   statContainer.classList.toggle(`visually-hidden`);
 };
-
+*/
 /**
  * функция, генерирующая данные для диаграммы
  * @param {Array} array - массив объектов с данными
@@ -118,7 +119,7 @@ const renderChart = (config) => {
   return chart;
 };
 
-statControl.addEventListener(`click`, onStatControlClick);
+// statControl.addEventListener(`click`, onStatControlClick);
 flatpickr(statPeriodInput, {mode: `range`, altInput: true, altFormat: `j F`, dateFormat: `j F`, defaultDate: [`18 March`, `24 March`], conjunction: ` - `});
 
 export {getDataForChart, renderChart};

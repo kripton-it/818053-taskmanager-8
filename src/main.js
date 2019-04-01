@@ -3,6 +3,7 @@ import generateTasks from './generate-tasks.js';
 import Task from './task.js';
 import TaskEdit from './task-edit.js';
 import FiltersContainer from './filters-container.js';
+import './header.js';
 import './stat.js';
 import {renderChart, getDataForChart} from './stat.js';
 import API from './api.js';
