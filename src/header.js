@@ -1,3 +1,4 @@
+import {renderStatistic} from './stat.js';
 const header = document.querySelector(`.control__btn-wrap`);
 const headerInputs = header.querySelectorAll(`input`);
 const tasksContainer = document.querySelector(`.board`);
@@ -18,6 +19,14 @@ const showStatistic = () => {
   searchResultsContainer.classList.add(`visually-hidden`);
   tasksContainer.classList.add(`visually-hidden`);
   statisticContainer.classList.remove(`visually-hidden`);
+  const statPeriodInput = document.querySelector(`.statistic__period-input`);
+  renderStatistic();
+  const onStatPeriodInputChange = (evt) => {
+    if (evt.target.value.includes(` to `)) {
+      renderStatistic();
+    }
+  };
+  statPeriodInput.addEventListener(`change`, onStatPeriodInputChange);
 };
 
 const showSearch = () => {

@@ -1,27 +1,19 @@
+import {STAT_COLORS, getMixedArray} from './utils.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import flatpickr from 'flatpickr';
 
+let originalCharts = [];
+
+const setTasks = (tasks) => {
+  originalCharts = tasks;
+};
 /**
   * Модуль отрисовки статистики.
   */
 
-const statControl = document.querySelector(`[for="control__statistic"]`);
-const statContainer = document.querySelector(`.statistic`);
-const boardTasksElement = document.querySelector(`.board__tasks`);
 const statPeriodInput = document.querySelector(`.statistic__period-input`);
 
-/**
- * обработчик нажатия на кнопку Statistic
- * @param {Object} evt - массив объектов с данными о фильтрах
- */
-/*
-const onStatControlClick = (evt) => {
-  evt.preventDefault();
-  boardTasksElement.classList.toggle(`visually-hidden`);
-  statContainer.classList.toggle(`visually-hidden`);
-};
-*/
 /**
  * функция, генерирующая данные для диаграммы
  * @param {Array} array - массив объектов с данными
@@ -57,11 +49,12 @@ const getDataForChart = (array, param) => array.reduce((acc, element) => {
 }, []);
 
 /**
- * функция для отрисовки диаграммы
+ * функция для отрисовки одной диаграммы
  * @param {Object} config - объект с параметрами
  * @return {Chart} экземпляр класса Chart с заданными параметрами
  */
 const renderChart = (config) => {
+  config.target.innerHTML = ``;
   config.target.parentNode.classList.remove(`visually-hidden`);
   const chart = new Chart(config.target, {
     plugins: [ChartDataLabels],
@@ -119,8 +112,32 @@ const renderChart = (config) => {
   return chart;
 };
 
-// statControl.addEventListener(`click`, onStatControlClick);
-flatpickr(statPeriodInput, {mode: `range`, altInput: true, altFormat: `j F`, dateFormat: `j F`, defaultDate: [`18 March`, `24 March`], conjunction: ` - `});
+/**
+ * функция для отрисовки статистики
+ */
+const renderStatistic = () => {
+  const tags = getDataForChart(originalCharts, `tags`);
+  const colors = getDataForChart(originalCharts, `color`);
+  // console.log(`render stat`);
+  const tagsConfig = {
+    target: document.querySelector(`.statistic__tags`),
+    type: `tags`,
+    labels: tags.map((tag) => `#${tag.value}`),
+    dataSet: tags.map((tag) => tag.count),
+    colors: getMixedArray(STAT_COLORS).slice(0, tags.length)
+  };
+  const colorsConfig = {
+    target: document.querySelector(`.statistic__colors`),
+    type: `colors`,
+    labels: colors.map((color) => color.value),
+    dataSet: colors.map((color) => color.count),
+    colors: colors.map((color) => color.value)
+  };
+  renderChart(tagsConfig);
+  renderChart(colorsConfig);
+};
 
-export {getDataForChart, renderChart};
+flatpickr(statPeriodInput, {mode: `range`, altInput: true, altFormat: `j F`, dateFormat: `j F`, defaultDate: [`01 April`, `07 April`], conjunction: ` - `});
+
+export {setTasks, renderStatistic};
 

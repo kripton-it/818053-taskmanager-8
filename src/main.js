@@ -1,14 +1,11 @@
-import {STAT_COLORS, getRandomInteger, getMixedArray} from './utils.js';
-import generateTasks from './generate-tasks.js';
+import {getRandomInteger} from './utils.js';
 import Task from './task.js';
 import TaskEdit from './task-edit.js';
 import FiltersContainer from './filters-container.js';
 import './header.js';
-import './stat.js';
-import {renderChart, getDataForChart} from './stat.js';
+import {setTasks} from './stat.js';
 import API from './api.js';
 
-const TASKS_NUMBER = 7;
 const FILTERS = [
   {
     caption: `All`,
@@ -44,23 +41,6 @@ const FILTERS = [
 ];
 const boardTasksElement = document.querySelector(`.board__tasks`);
 const mainFilterElement = document.querySelector(`.main__filter`);
-const initialTasks = generateTasks(TASKS_NUMBER);
-const tags = getDataForChart(initialTasks, `tags`);
-const colors = getDataForChart(initialTasks, `color`);
-const tagsConfig = {
-  target: document.querySelector(`.statistic__tags`),
-  type: `tags`,
-  labels: tags.map((tag) => `#${tag.value}`),
-  dataSet: tags.map((tag) => tag.count),
-  colors: getMixedArray(STAT_COLORS).slice(0, tags.length)
-};
-const colorsConfig = {
-  target: document.querySelector(`.statistic__colors`),
-  type: `colors`,
-  labels: colors.map((color) => color.value),
-  dataSet: colors.map((color) => color.count),
-  colors: colors.map((color) => color.value)
-};
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
 const END_POINT = `https://es8-demo-srv.appspot.com/task-manager`;
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
@@ -217,10 +197,11 @@ const filterTasks = (tasks, filterName) => {
 
 /**
  * функция для отрисовки фильтров
+ * @param {Array} tasks - фильтруемый массив объектов с данными о тасках
  * @param {Array} filters - массив объектов с данными о фильтрах
  * @param {Object} container - DOM-элемент, в который нужно отрисовать фильтры
  */
-const renderFilters = (filters, container) => {
+const renderFilters = (tasks, filters, container) => {
   container.innerHTML = ``;
   const filtersContainerComponent = new FiltersContainer(filters);
   /**
@@ -229,27 +210,30 @@ const renderFilters = (filters, container) => {
     */
   filtersContainerComponent.onFilter = (evt) => {
     const filterName = evt.target.id || evt.target.htmlFor;
-    const filteredTasks = filterTasks(initialTasks, filterName);
+    const filteredTasks = filterTasks(tasks, filterName);
     renderTasks(filteredTasks, boardTasksElement);
   };
   filtersContainerComponent.render(container);
 };
 
-// renderTasks(initialTasks, boardTasksElement);
-renderFilters(FILTERS, mainFilterElement);
-renderChart(tagsConfig);
-renderChart(colorsConfig);
-
 noTasksElement.textContent = `Loading tasks...`;
 noTasksElement.classList.remove(`visually-hidden`);
 boardTasksElement.classList.add(`visually-hidden`);
 
+/**
+ * функция для отрисовки полученных с сервера тасков
+ * @param {Array} tasks - массив объектов ModelTask с данными
+ */
+const render = (tasks) => {
+  noTasksElement.classList.add(`visually-hidden`);
+  boardTasksElement.classList.remove(`visually-hidden`);
+  renderFilters(tasks, FILTERS, mainFilterElement);
+  renderTasks(tasks, boardTasksElement);
+  setTasks(tasks.filter((task) => task.isDone));
+};
+
 api.getTasks()
-  .then((tasks) => {
-    noTasksElement.classList.add(`visually-hidden`);
-    boardTasksElement.classList.remove(`visually-hidden`);
-    renderTasks(tasks, boardTasksElement);
-  })
+  .then(render)
   .catch(() => {
     noTasksElement.textContent = `Something went wrong while loading your tasks. Check your connection or try again later`;
   });

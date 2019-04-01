@@ -71,7 +71,7 @@ export default class Task extends Component {
    * @return  {string} шаблонная строка
    */
   get template() {
-    console.log(this._dueDate);
+    // console.log(this._dueDate);
     const repeatingClass = this._state.isRepeating ? ` card--repeat` : ``;
     const overdueClass = (this._state.isDate && this._state.isOverdue) ? ` card--deadline` : ``;
     const cardControl = `<div class="card__control">
