@@ -4,6 +4,10 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import flatpickr from 'flatpickr';
 
 let originalCharts = [];
+const Target = {
+  tags: document.querySelector(`.statistic__tags`),
+  colors: document.querySelector(`.statistic__colors`)
+};
 
 const setTasks = (tasks) => {
   originalCharts = tasks;
@@ -118,21 +122,41 @@ const renderChart = (config) => {
 const renderStatistic = () => {
   const tags = getDataForChart(originalCharts, `tags`);
   const colors = getDataForChart(originalCharts, `color`);
-  // console.log(`render stat`);
-  const tagsConfig = {
-    target: document.querySelector(`.statistic__tags`),
-    type: `tags`,
-    labels: tags.map((tag) => `#${tag.value}`),
-    dataSet: tags.map((tag) => tag.count),
-    colors: getMixedArray(STAT_COLORS).slice(0, tags.length)
+
+  /**
+ * функция для генерации конфига
+ * @param {string} type - параметр статистики (tags/colors)
+ * @return {Object} объект с настройками
+ */
+  const getConfig = (type) => {
+    const config = {
+      target: Target[type],
+      type,
+      labels: [],
+      dataSet: [],
+      colors: []
+    };
+
+    switch (type) {
+      case `tags`:
+        tags.forEach((tag) => {
+          config.labels.push(`#${tag.value}`);
+          config.dataSet.push(tag.count);
+        });
+        config.colors = getMixedArray(STAT_COLORS).slice(0, tags.length);
+        break;
+      case `colors`:
+        colors.forEach((color) => {
+          config.labels.push(color.value);
+          config.dataSet.push(color.count);
+        });
+        config.colors = config.labels;
+        break;
+    }
+    return config;
   };
-  const colorsConfig = {
-    target: document.querySelector(`.statistic__colors`),
-    type: `colors`,
-    labels: colors.map((color) => color.value),
-    dataSet: colors.map((color) => color.count),
-    colors: colors.map((color) => color.value)
-  };
+  const tagsConfig = getConfig(`tags`);
+  const colorsConfig = getConfig(`colors`);
   renderChart(tagsConfig);
   renderChart(colorsConfig);
 };
